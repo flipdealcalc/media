@@ -1,0 +1,12 @@
+{
+ "id": "2026-11-08_three_numbers",
+ "music": "playful",
+ "scenes": [
+  {"kind": "card", "title": "3 numbers I check before every offer.", "sub": "Most people only check one.", "dur": 3.0},
+  {"kind": "stats", "title": "$105K asking. $215K ARV.", "rows": [["1. Max offer", "$102,375", "ink"], ["2. Profit at asking", "$28,153", "good"], ["3. Worst case", "$4,882", "amber"]], "caption": "1,250 sq ft, heavy rehab with 10% contingency: $48,125", "dur": 4.8},
+  {"kind": "shot", "img": "shots/v1_offer.jpg", "title": "Max offer: the lower of 2 methods", "caption": "True cost says $103,180. The 70% rule says $102,375. Use the lower one.", "dur": 4.4},
+  {"kind": "card", "title": "Asking is $2,625 over max.", "sub": "If it sells slow and low, you clear just $4,882.", "dur": 3.4},
+  {"kind": "card", "title": "So I'd offer $102K or less.", "sub": "Not because the deal is bad. Because the worst case is thin.", "dur": 3.6},
+  {"kind": "end", "title": "Check all 3 on your next deal", "cta": "Free calculator · link in bio", "dur": 3.4}
+ ]
+}

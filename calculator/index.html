@@ -1,0 +1,1399 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+/* Out-of-pocket + loan comparison section */
+.lc-terms, .lc-tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.lc-wrap { overflow-x: auto; margin-top: 10px; }
+.lc-terms th, .lc-terms td, .lc-tbl th, .lc-tbl td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.lc-terms th:first-child, .lc-terms td:first-child, .lc-tbl th:first-child, .lc-tbl td:first-child { text-align: left; white-space: normal; min-width: 150px; }
+.lc-terms thead th, .lc-tbl thead th { font: 700 12px var(--font-display); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); border-bottom: 2px solid var(--line); }
+.lc-terms td .in { width: 120px; margin-left: auto; }
+.lc-terms td .in input { padding: 5px 6px; font-size: 14px; text-align: right; }
+.lc-terms td .na { color: var(--muted); font-size: 12px; }
+.lc-tbl td { font-family: var(--font-num); }
+.lc-tbl td:first-child { font-family: var(--font-body); }
+.lc-tbl tr.sub td { color: var(--muted); font-size: 12.5px; }
+.lc-tbl tr.sub td:first-child { padding-left: 18px; }
+.lc-tbl tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0; }
+.lc-tbl tr.grp td { background: var(--accent-soft); color: var(--ink); font: 700 12px var(--font-display); letter-spacing: .06em; text-transform: uppercase; }
+.lc-tbl td.best { color: var(--good); font-weight: 700; }
+.lc-h { font-family: var(--font-display); font-size: 15px; margin: 18px 0 2px; }
+.lc-p { margin: 0; font-size: 13px; color: var(--muted); max-width: 72ch; }
+.lc-note { margin-top: 10px; font-size: 12px; color: var(--muted); }
+.lc-note li { margin-bottom: 3px; }
+</style>
+</head><body>
+<title>Flip Deal Calculator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: inputs ledger on the left, a sticky verdict + numbers panel on the right; stacks to one column on phones */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #17201d;
+  --muted: #5b6862;
+  --line: #d6ddd9;
+  --accent: #1f5f8b;
+  --accent-soft: #e3eef6;
+  --good: #1e7a46;
+  --good-soft: #e1f3e8;
+  --warn: #a8640c;
+  --warn-soft: #fbefdc;
+  --bad: #b3312a;
+  --bad-soft: #fbe5e3;
+  --seg-1: #1f5f8b; --seg-2: #c98a2b; --seg-3: #6c7a89; --seg-4: #8a5a9e; --seg-5: #3f8f8a; --seg-6: #1e7a46;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 20px; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: 30px; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 62ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+button { font: 600 13px var(--font-body); border-radius: 6px; padding: 8px 12px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+button:hover { border-color: var(--accent); color: var(--accent); }
+button.arm, button.arm:hover { border-color: var(--bad); color: var(--bad); background: var(--bad-soft); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.example-note { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--warn); background: var(--warn-soft); padding: 3px 8px; border-radius: 4px; margin-top: 8px; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } .results { position: static !important; } }
+
+.inputs { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+fieldset { margin: 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 14px 16px 16px; min-width: 0; }
+legend { font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); padding: 0 6px; }
+.step { color: var(--muted); font-weight: 500; margin-right: 6px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px 16px; }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field label { font-size: 13px; font-weight: 600; }
+.field .hint { font-size: 12px; color: var(--muted); }
+.in { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); overflow: hidden; }
+.in span { font: 500 13px var(--font-num); color: var(--muted); padding: 0 8px; }
+.in input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: 500 15px var(--font-num); padding: 8px 8px; font-variant-numeric: tabular-nums; }
+.in input:focus { outline: none; }
+.in:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.wide { grid-column: 1 / -1; }
+.calc-line { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 14px; }
+.calc-line b { font-family: var(--font-num); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.results { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.verdict { border-radius: 8px; padding: 16px 18px; border: 1px solid var(--line); background: var(--surface); }
+.verdict .tag { display: inline-block; font-family: var(--font-display); font-weight: 800; font-size: 13px; letter-spacing: .1em; padding: 4px 10px; border-radius: 4px; }
+.verdict h2 { font-family: var(--font-display); font-size: 21px; margin: 10px 0 4px; text-wrap: balance; }
+.verdict p { margin: 0; color: var(--muted); font-size: 14px; }
+.verdict.go { background: var(--good-soft); border-color: var(--good); } .verdict.go .tag { background: var(--good); color: var(--surface); }
+.verdict.caution { background: var(--warn-soft); border-color: var(--warn); } .verdict.caution .tag { background: var(--warn); color: var(--surface); }
+.verdict.pass { background: var(--bad-soft); border-color: var(--bad); } .verdict.pass .tag { background: var(--bad); color: var(--surface); }
+.verdict.empty .tag { background: var(--line); color: var(--ink); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.panel h3 { font-family: var(--font-display); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.rows { display: flex; flex-direction: column; }
+.row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.row:last-child { border-bottom: 0; }
+.row .v { font-family: var(--font-num); font-variant-numeric: tabular-nums; font-weight: 500; white-space: nowrap; }
+.row.key { font-weight: 700; font-size: 15px; }
+.row.key .v { font-size: 17px; }
+.pos { color: var(--good); } .neg { color: var(--bad); }
+
+.bar { display: flex; height: 22px; border-radius: 4px; overflow: hidden; background: var(--line); margin: 6px 0 10px; }
+.bar div { height: 100%; transition: width .25s ease; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; font-size: 12px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+.copy-status { font-size: 12px; color: var(--good); min-height: 16px; }
+.checklist { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.cl-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.cl-head h4 { font-family: var(--font-display); font-size: 15px; margin: 0; }
+.cl-head p { margin: 2px 0 0; font-size: 12px; color: var(--muted); max-width: 60ch; }
+.cl-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.cl-tools button { padding: 6px 10px; font-size: 12px; }
+details.cat { border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+details.cat > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-weight: 600; font-size: 14px; }
+details.cat > summary::-webkit-details-marker { display: none; }
+details.cat > summary::before { content: "▸"; color: var(--muted); font-size: 12px; transition: transform .15s ease; }
+details.cat[open] > summary::before { transform: rotate(90deg); }
+details.cat > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 6px; }
+.cat-name { flex: 1; min-width: 0; }
+.cat-count { font-size: 12px; font-weight: 500; color: var(--muted); }
+.cat-sub { font-family: var(--font-num); font-weight: 500; font-variant-numeric: tabular-nums; min-width: 72px; text-align: right; }
+.cat-sub.on { color: var(--accent); }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 6px 14px; padding: 4px 12px 12px; }
+.item { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 6px; border-radius: 4px; }
+.item.on { background: var(--accent-soft); }
+.item input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent); flex: none; margin: 0; }
+.item label { flex: 1; min-width: 0; font-size: 13.5px; line-height: 1.3; cursor: pointer; }
+.item .in { width: 104px; flex: none; background: var(--surface); }
+.item .in input { padding: 5px 6px; font-size: 13.5px; }
+.item .in span { padding: 0 2px 0 6px; }
+.item .rm { padding: 2px 7px; font-size: 13px; line-height: 1.2; }
+.custom-add { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 12px 12px; }
+.custom-add .in { flex: 1 1 180px; background: var(--surface); }
+.custom-add .in.cost { flex: 0 0 120px; }
+.cl-total { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 6px; background: var(--accent-soft); font-weight: 600; }
+.cl-total b { font-family: var(--font-num); font-weight: 500; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { details.cat > summary::before { transition: none; } }
+@media (max-width: 480px) { .items { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .bar div { transition: none; } }
+@media (max-width: 480px) { h1 { font-size: 25px; } .fields { grid-template-columns: 1fr; } }
+
+/* product polish */
+.in.bad { border-color: var(--bad); box-shadow: 0 0 0 2px var(--bad-soft); }
+.err { font-size: 12px; color: var(--bad); font-weight: 600; }
+details.howto { margin-top: 10px; max-width: 70ch; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+details.howto > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; font-size: 14px; color: var(--accent); }
+details.howto > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details.howto ol { margin: 0; padding: 0 14px 12px 32px; font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+details.howto p { margin: 0; padding: 0 14px 12px; font-size: 13px; color: var(--muted); }
+.saves { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.saves select { font: 500 13px var(--font-body); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; background: var(--surface); color: var(--ink); max-width: 220px; }
+.checks { border: 1px solid var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 12px 14px; }
+.checks h3 { font-family: var(--font-display); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--warn); margin: 0 0 6px; }
+.checks ul { margin: 0; padding-left: 18px; font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
+.in select { flex: 1; width: 100%; min-height: 40px; font-size: 15px; padding: 8px 6px; cursor: pointer; border: 0; background: transparent; color: var(--ink); }
+.foot { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; max-width: 90ch; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Flip Deal Calculator</h1>
+      <p class="sub">Enter a deal's numbers and see your max offer, profit and worst case update as you type. Uses the low end of your ARV comps, both MAO methods and a three-way stress test.</p>
+      <span class="example-note" id="exampleNote">Example deal loaded — replace with your numbers</span>
+      <details class="howto" id="howto">
+        <summary>How to use this calculator</summary>
+        <ol>
+          <li><b>Reset</b> to clear the example, then enter the address, asking price, square footage and ARV. Use the low end of your sold comps for ARV.</li>
+          <li><b>Rehab:</b> pick a rehab level, type a contractor's number, or check items in the rehab checklist.</li>
+          <li>Fill in <b>holding</b>, <b>selling</b> and <b>buying</b> costs. The defaults are typical; change any that don't fit your market.</li>
+          <li>Read the <b>verdict</b> and <b>max offer</b> on the right. Amber warnings flag numbers worth a second look.</li>
+          <li>Section 7 compares <b>hard money, conventional and HELOC</b> financing, and what happens if you refinance or sell.</li>
+          <li><b>Save deal</b> keeps it in this browser so you can come back to it or compare several.</li>
+        </ol>
+        <p>You can type amounts as 150000, 150,000 or 150k. Your entries are saved in this browser only; nothing is sent anywhere.</p>
+      </details>
+    </div>
+    <div class="actions">
+      <div class="saves">
+        <button type="button" id="btnSave">Save deal</button>
+        <label class="sr" for="savedDeals" style="position:absolute;left:-9999px">Saved deals</label>
+        <select id="savedDeals" aria-label="Open a saved deal"><option value="">Saved deals…</option></select>
+        <button type="button" id="btnDelSave" hidden>Delete</button>
+      </div>
+      <button type="button" id="btnCopy">Copy summary</button>
+      <button type="button" id="btnExample">Load example</button>
+      <button type="button" id="btnClear" title="Erase every entry and start a new deal">Reset</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <form class="inputs" id="form" autocomplete="off">
+      <fieldset>
+        <legend><span class="step">1</span>The deal</legend>
+        <div class="fields">
+          <div class="field wide"><label for="address">Property address</label><div class="in"><input id="address" type="text" placeholder="123 Main St, City, ST"></div></div>
+          <div class="field"><label for="asking">Asking price / bid</label><div class="in"><span>$</span><input id="asking" inputmode="decimal"></div></div>
+          <div class="field"><label for="premium">Auction buyer's premium</label><div class="in"><input id="premium" inputmode="decimal"><span>%</span></div><div class="hint">0 if not an auction</div></div>
+          <div class="field"><label for="sqft">Square footage</label><div class="in"><input id="sqft" inputmode="decimal"><span>sq ft</span></div><div class="hint">Finished living area</div></div>
+          <div class="field"><label for="arv">ARV (low end of comps)</label><div class="in"><span>$</span><input id="arv" inputmode="decimal"></div></div>
+        </div>
+        <div class="calc-line"><span>Total purchase price <b id="o_price">—</b></span><span>Price per sq ft <b id="o_ppsf">—</b></span><span>ARV per sq ft <b id="o_apsf">—</b></span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="step">2</span>Rehab</legend>
+        <div class="fields">
+          <div class="field"><label for="rehabLevel">Rehab level</label><div class="in"><select id="rehabLevel"><option value="light">Light · $15/sq ft</option><option value="average">Average · $27.50/sq ft</option><option value="heavy">Heavy · $35/sq ft</option><option value="veryheavy">Very heavy · $40/sq ft</option><option value="custom">Custom</option></select></div><div class="hint" id="levelHint"></div></div>
+          <div class="field"><label for="rehabEst">Rehab estimate</label><div class="in"><span>$</span><input id="rehabEst" inputmode="decimal"></div><div class="hint" id="rehabHint">Type a contractor's number, or check items below</div></div>
+          <div class="field"><label for="rehabPsf">Rehab cost per sq ft</label><div class="in"><span>$</span><input id="rehabPsf" inputmode="decimal"><span>/sq ft</span></div><div class="hint" id="psfHint">Type a rate to fill the estimate. Light $15–25, medium $25–45, full gut $45+</div></div>
+          <div class="field"><label for="contPct">Contingency</label><div class="in"><input id="contPct" inputmode="decimal"><span>%</span></div><div class="hint">10% minimum</div></div>
+        </div>
+        <div class="calc-line"><span>Total rehab budget <b id="o_rehab">—</b></span><span>With contingency, per sq ft <b id="o_rpsf">—</b></span></div>
+
+        <div class="checklist" id="checklist">
+          <div class="cl-head">
+            <div>
+              <h4>Rehab checklist</h4>
+              <p>Check what the house needs; the total fills in your rehab estimate. Costs are rough 2026 ballparks for a 1,200–1,800 sq ft house (Central Indiana pricing), so adjust them to your market. Type over any number with your contractor's price.</p>
+            </div>
+            <div class="cl-tools">
+              <button type="button" id="clExpand">Expand all</button>
+              <button type="button" id="clCollapse">Collapse all</button>
+              <button type="button" id="clReset">Uncheck all</button>
+            </div>
+          </div>
+          <div id="cats"></div>
+          <div class="cl-total"><span>Checked items <span class="cat-count" id="clCount"></span></span><b id="clTotal">$0</b></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="step">3</span>Holding costs (per month)</legend>
+        <div class="fields">
+          <div class="field"><label for="months">Holding period</label><div class="in"><input id="months" inputmode="decimal"><span>mo</span></div><div class="hint">6 months minimum</div></div>
+          <div class="field"><label for="hIns">Insurance</label><div class="in"><span>$</span><input id="hIns" inputmode="decimal"></div></div>
+          <div class="field"><label for="hTax">Property taxes</label><div class="in"><span>$</span><input id="hTax" inputmode="decimal"></div></div>
+          <div class="field"><label for="hUtil">Utilities</label><div class="in"><span>$</span><input id="hUtil" inputmode="decimal"></div></div>
+          <div class="field"><label for="hInt">Loan interest</label><div class="in"><span>$</span><input id="hInt" inputmode="decimal"></div><div class="hint">Profit math only; section 7 figures loan payments itself</div></div>
+          <div class="field"><label for="hMow">Mowing / HOA</label><div class="in"><span>$</span><input id="hMow" inputmode="decimal"></div></div>
+        </div>
+        <div class="calc-line"><span>Per month <b id="o_hmo">—</b></span><span>Total <b id="o_hold">—</b></span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="step">4</span>Selling costs</legend>
+        <div class="fields">
+          <div class="field"><label for="commPct">Agent commission</label><div class="in"><input id="commPct" inputmode="decimal"><span>% of ARV</span></div></div>
+          <div class="field"><label for="sTitlePct">Title (sell side)</label><div class="in"><input id="sTitlePct" inputmode="decimal"><span>% of ARV</span></div></div>
+          <div class="field"><label for="repairPct">Buyer repair requests</label><div class="in"><input id="repairPct" inputmode="decimal"><span>% of rehab</span></div><div class="hint">Fixes after the buyer's inspection</div></div>
+          <div class="field"><label for="photos">Photos / staging</label><div class="in"><span>$</span><input id="photos" inputmode="decimal"></div></div>
+        </div>
+        <div class="calc-line"><span>Total selling</span><b id="o_sell">—</b></div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="step">5</span>Acquisition costs</legend>
+        <div class="fields">
+          <div class="field"><label for="bTitlePct">Title (buy side)</label><div class="in"><input id="bTitlePct" inputmode="decimal"><span>% of price</span></div></div>
+          <div class="field"><label for="lender">Lender fees / points</label><div class="in"><span>$</span><input id="lender" inputmode="decimal"></div></div>
+          <div class="field"><label for="appraisal">Appraisal</label><div class="in"><span>$</span><input id="appraisal" inputmode="decimal"></div></div>
+          <div class="field"><label for="dd">Due diligence</label><div class="in"><span>$</span><input id="dd" inputmode="decimal"></div><div class="hint">Inspection, survey, cleanout</div></div>
+        </div>
+        <div class="calc-line"><span>Total acquisition</span><b id="o_acq">—</b></div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="step">6</span>Targets and stress test</legend>
+        <div class="fields">
+          <div class="field"><label for="profitAmt">Desired profit</label><div class="in"><span>$</span><input id="profitAmt" inputmode="decimal"></div><div class="hint">Minimum profit you'll accept</div></div>
+          <div class="field"><label for="rulePct">Rule of thumb</label><div class="in"><input id="rulePct" inputmode="decimal"><span>% of ARV</span></div><div class="hint">The 70% rule</div></div>
+          <div class="field"><label for="wMonths">Worst-case hold</label><div class="in"><input id="wMonths" inputmode="decimal"><span>mo</span></div></div>
+          <div class="field"><label for="wDrop">ARV drop</label><div class="in"><input id="wDrop" inputmode="decimal"><span>%</span></div></div>
+          <div class="field"><label for="wConc">Buyer concessions</label><div class="in"><input id="wConc" inputmode="decimal"><span>% of sale</span></div></div>
+        </div>
+      </fieldset>
+
+      <fieldset id="lcSection">
+        <legend><span class="step">7</span>Out-of-pocket costs and loan comparison</legend>
+        <p class="lc-p">What it costs you to buy, rehab and carry this house with hard money, a conventional loan or a HELOC. Each loan covers the purchase after your down payment <b>plus 100% of the rehab</b>, paid to your contractors in monthly draws. Then what each looks like if you refinance into a DSCR loan once the rehab is done, or sell the house instead (table 6). Uses the price, closing costs, rehab and value you entered above.</p>
+        <div class="fields" style="margin-top:12px">
+          <div class="field"><label for="lc_asis">As-is value at purchase</label><div class="in"><span>$</span><input id="lc_asis" inputmode="decimal" placeholder="= price"></div><div class="hint">Blank uses the purchase price</div></div>
+          <div class="field"><label for="lc_down">Down payment (all loans)</label><div class="in"><input id="lc_down" inputmode="decimal"><span>%</span></div></div>
+          <div class="field"><label for="lc_agent">Buyer's agent fee</label><div class="in"><input id="lc_agent" inputmode="decimal"><span>% of price</span></div><div class="hint">0 if the seller pays it</div></div>
+          <div class="field"><label for="lc_months">Months until refinance</label><div class="in"><input id="lc_months" inputmode="decimal"><span>mo</span></div><div class="hint">Rehab time; one contractor draw per month</div></div>
+          <div class="field"><label for="lc_dutch">Hard money charges interest on</label><div class="in"><select id="lc_dutch"><option value="drawn">Only funds drawn</option><option value="full">Full loan from day one</option></select></div><div class="hint">Ask your lender: "Dutch" interest = full loan</div></div>
+        </div>
+
+        <h4 class="lc-h">Loan terms</h4>
+        <p class="lc-p">Defaults are October 2026 market rates. Type over any of them with a real quote.</p>
+        <div class="lc-wrap"><table class="lc-terms">
+          <thead><tr><th></th><th>Hard money</th><th>Conventional</th><th>HELOC</th><th>DSCR refi</th></tr></thead>
+          <tbody>
+            <tr><td>Interest rate</td>
+              <td><div class="in"><input id="lc_hmRate" inputmode="decimal" aria-label="Hard money rate"><span>%</span></div></td>
+              <td><div class="in"><input id="lc_cvRate" inputmode="decimal" aria-label="Conventional rate"><span>%</span></div></td>
+              <td><div class="in"><input id="lc_hlRate" inputmode="decimal" aria-label="HELOC rate"><span>%</span></div></td>
+              <td><div class="in"><input id="lc_dsRate" inputmode="decimal" aria-label="DSCR rate"><span>%</span></div></td></tr>
+            <tr><td>Points</td>
+              <td><div class="in"><input id="lc_hmPts" inputmode="decimal" aria-label="Hard money points"><span>%</span></div></td>
+              <td><div class="in"><input id="lc_cvPts" inputmode="decimal" aria-label="Conventional points"><span>%</span></div></td>
+              <td><div class="in"><input id="lc_hlPts" inputmode="decimal" aria-label="HELOC points"><span>%</span></div></td>
+              <td><div class="in"><input id="lc_dsPts" inputmode="decimal" aria-label="DSCR points"><span>%</span></div></td></tr>
+            <tr><td>Lender fees<br><span class="na">underwriting, processing, appraisal</span></td>
+              <td><div class="in"><span>$</span><input id="lc_hmFees" inputmode="decimal" aria-label="Hard money fees"></div></td>
+              <td><div class="in"><span>$</span><input id="lc_cvFees" inputmode="decimal" aria-label="Conventional fees"></div></td>
+              <td><div class="in"><span>$</span><input id="lc_hlFees" inputmode="decimal" aria-label="HELOC fees"></div></td>
+              <td><div class="in"><span>$</span><input id="lc_dsFees" inputmode="decimal" aria-label="DSCR fees"></div></td></tr>
+            <tr><td>Draw fee<br><span class="na">per draw inspection</span></td>
+              <td><div class="in"><span>$</span><input id="lc_hmDrawFee" inputmode="decimal" aria-label="Hard money draw fee"></div></td>
+              <td><div class="in"><span>$</span><input id="lc_cvDrawFee" inputmode="decimal" aria-label="Conventional draw fee"></div></td>
+              <td><div class="in"><span>$</span><input id="lc_hlDrawFee" inputmode="decimal" aria-label="HELOC draw fee"></div></td>
+              <td class="na">—</td></tr>
+            <tr><td>Term</td>
+              <td><div class="in"><input id="lc_hmTerm" inputmode="decimal" aria-label="Hard money term"><span>mo</span></div></td>
+              <td><div class="in"><input id="lc_cvTerm" inputmode="decimal" aria-label="Conventional term"><span>yr</span></div></td>
+              <td><div class="in"><input id="lc_hlDraw" inputmode="decimal" aria-label="HELOC draw years"><span>yr draw</span></div></td>
+              <td><div class="in"><input id="lc_dsTerm" inputmode="decimal" aria-label="DSCR term"><span>yr</span></div></td></tr>
+            <tr><td>Payments</td>
+              <td class="na">Interest only, balloon</td>
+              <td class="na">Principal + interest</td>
+              <td><div class="in"><input id="lc_hlRepay" inputmode="decimal" aria-label="HELOC repayment years"><span>yr repay</span></div></td>
+              <td><div class="in"><input id="lc_dsLtv" inputmode="decimal" aria-label="DSCR loan to value"><span>% LTV</span></div></td></tr>
+          </tbody>
+        </table></div>
+
+        <h4 class="lc-h">1. Cash out of pocket to buy and rehab</h4>
+        <p class="lc-p">Everything you pay before the refinance: down payment, closing, agent fee, points, lender and draw fees, the loan payments while the work gets done, and the property's holding costs. The rehab itself comes from the loan.</p>
+        <div class="lc-wrap"><table class="lc-tbl" id="lc_t1"></table></div>
+
+        <h4 class="lc-h">2. Cost of each loan over its full life</h4>
+        <p class="lc-p">If you kept the purchase loan to the end of its term instead of refinancing.</p>
+        <div class="lc-wrap"><table class="lc-tbl" id="lc_t2"></table></div>
+
+        <h4 class="lc-h">3. After the rehab: refinance into a DSCR loan</h4>
+        <p class="lc-p">The DSCR loan pays off the purchase loan. Shows the cash you get back, what stays in the deal, and the total borrowing cost from purchase through the full DSCR term.</p>
+        <div class="lc-wrap"><table class="lc-tbl" id="lc_t3"></table></div>
+
+        <h4 class="lc-h">4. Equity position</h4>
+        <p class="lc-p">Value minus what is owed against the house, at purchase, after the rehab and after the DSCR refi. For a HELOC the debt sits on your own home, but it is shown the same way so the deals compare.</p>
+        <div class="lc-wrap"><table class="lc-tbl" id="lc_t4"></table></div>
+
+        <h4 class="lc-h">5. HELOC for the down payment</h4>
+        <p class="lc-p">A HELOC on your home pays the down payment and all closing costs (title, agent fee, points and lender fees), and hard money or a conventional loan covers the rest of the price plus the full rehab. At the DSCR refi, the cash back pays off the HELOC first. Uses the HELOC rate and fees from the loan terms above.</p>
+        <div class="fields" style="margin-top:10px">
+          <div class="field"><label for="lc_hdCover">HELOC pays for</label><div class="in"><select id="lc_hdCover"><option value="all">Down payment + closing costs and loan fees</option><option value="down">Down payment only</option></select></div></div>
+        </div>
+        <div class="lc-wrap"><table class="lc-tbl" id="lc_t5"></table></div>
+
+        <h4 class="lc-h">6. Sell instead of refinancing (flip exit)</h4>
+        <p class="lc-p">You keep the purchase loan through the rehab and the sale, then pay it off from the sale proceeds. Uses the holding period from section 3 as months until the sale closes, and the selling costs from section 4.</p>
+        <div class="fields" style="margin-top:10px">
+          <div class="field"><label for="lc_bestUp">Best case: ARV higher by</label><div class="in"><input id="lc_bestUp" inputmode="decimal"><span>%</span></div><div class="hint">Sells above your low-end comps</div></div>
+          <div class="field"><label for="lc_bestMo">Best case: months until sale</label><div class="in"><input id="lc_bestMo" inputmode="decimal" placeholder="auto"><span>mo</span></div><div class="hint">Blank = 2 months faster, not before rehab ends</div></div>
+          <div class="field"><label for="lc_ext">Hard money extension fee</label><div class="in"><input id="lc_ext" inputmode="decimal"><span>% of loan</span></div><div class="hint">Charged if the worst case runs past the term</div></div>
+        </div>
+        <p class="lc-p" style="margin-top:8px">Worst case uses the stress test from section 6 of the calculator: longer hold, lower ARV and buyer concessions.</p>
+        <div class="lc-wrap"><table class="lc-tbl" id="lc_t6"></table></div>
+        <p class="lc-p" id="lc_t6note" style="color:var(--warn)"></p>
+
+        <ul class="lc-note">
+          <li><b>Hard money</b> commonly funds up to 85–90% of price plus 100% of rehab, capped at 70–75% of ARV, with rehab held back and released in draws after an inspection. Built for a 6–12 month hold; expect an extension fee past the term.</li>
+          <li><b>Conventional</b> only covers rehab as a renovation loan (Fannie Mae HomeStyle), which pays P&amp;I on the full amount from closing and holds the rehab in escrow. It needs a licensed contractor bid and takes longer to close. Most lenders want 6 months of ownership before a cash-out refi.</li>
+          <li><b>HELOC</b> is borrowed against your own home, so you only pay interest on what you draw and can pay contractors directly. Your line has to be big enough for the purchase plus rehab. The rate is variable.</li>
+          <li><b>DSCR</b> lenders size the loan to the rent (DSCR 1.0–1.25), usually want 3–6 months of ownership, and most charge a prepayment penalty for the first 3–5 years.</li>
+          <li><b>HELOC for the down payment:</b> hard money lenders generally allow it. Conventional loans allow a down payment borrowed against an asset you own, like your home, but the HELOC payment counts in your debt-to-income. Every loan here adds leverage, so watch the total borrowed against price plus rehab.</li>
+          <li>Rates as of Oct 2026: 30-year average 7.32% (investor loans run ~0.6% higher), HELOC average 7.34%, DSCR about 6.75–7.75%, hard money 10–12%.</li>
+        </ul>
+      </fieldset>
+    </form>
+
+    <aside class="results" aria-live="polite">
+      <div class="verdict empty" id="verdict">
+        <span class="tag" id="vTag">WAITING</span>
+        <h2 id="vHead">Enter an asking price and ARV</h2>
+        <p id="vText">The verdict appears once the deal has an asking price and an after-repair value.</p>
+      </div>
+
+      <div class="checks" id="checks" hidden>
+        <h3>Worth a second look</h3>
+        <ul id="checkList"></ul>
+      </div>
+
+      <div class="panel">
+        <h3>Your offer</h3>
+        <div class="rows">
+          <div class="row"><span>MAO, true cost</span><span class="v" id="r_mao1">—</span></div>
+          <div class="row"><span>MAO, rule of thumb</span><span class="v" id="r_mao2">—</span></div>
+          <div class="row key"><span>Max total price (lower of two)</span><span class="v" id="r_offer">—</span></div>
+          <div class="row" id="bidRow" hidden><span>Max bid before premium</span><span class="v" id="r_bid">—</span></div>
+          <div class="row"><span>Room vs. asking</span><span class="v" id="r_room">—</span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Profit if you pay asking</h3>
+        <div class="rows">
+          <div class="row key"><span>Projected profit</span><span class="v" id="r_profit">—</span></div>
+          <div class="row"><span>Profit as % of ARV</span><span class="v" id="r_pct">—</span></div>
+          <div class="row"><span>Worst-case profit</span><span class="v" id="r_worst">—</span></div>
+        </div>
+        <p class="note" id="worstNote">Worst case: longer hold, lower ARV and buyer concessions all at once.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Where the ARV goes</h3>
+        <div class="bar" id="bar" role="img" aria-label="Breakdown of the after-repair value"></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="copy-status" id="copyStatus" role="status"></div>
+    </aside>
+  </div>
+  <footer class="foot">
+    <span><b>Estimates only.</b> This calculator is a planning tool, not financial, lending, tax or legal advice. Verify ARV with sold comps, rehab with contractor bids, and loan terms with your lender.</span>
+    <span>Default loan rates reflect October 2026 national averages. Rehab checklist ballparks are 2026 Central Indiana pricing. Adjust both for your market.</span>
+    <span>Flip Deal Calculator · version 2.0</span>
+  </footer>
+</div>
+
+<script>
+/* Shared input handling: parsing (150k, $1,250, 7.5%), per-field limits, inline validation. */
+window.FlipInput = (function () {
+  var L = {
+    months: [0, 60, "months"], wMonths: [0, 60, "months"], lc_months: [0, 36, "months"], lc_bestMo: [0, 60, "months"],
+    lc_hmTerm: [1, 60, "months"], lc_cvTerm: [1, 40, "years"], lc_hlDraw: [1, 30, "years"], lc_hlRepay: [1, 30, "years"], lc_dsTerm: [1, 40, "years"],
+    premium: [0, 25, "%"], contPct: [0, 100, "%"], commPct: [0, 20, "%"], sTitlePct: [0, 10, "%"], repairPct: [0, 50, "%"], bTitlePct: [0, 10, "%"],
+    rulePct: [0, 100, "%"], wDrop: [0, 90, "%"], wConc: [0, 30, "%"], lc_down: [0, 100, "%"], lc_agent: [0, 10, "%"], lc_dsLtv: [0, 100, "%"],
+    lc_bestUp: [0, 100, "%"], lc_ext: [0, 20, "%"],
+    lc_hmRate: [0, 30, "%"], lc_cvRate: [0, 30, "%"], lc_hlRate: [0, 30, "%"], lc_dsRate: [0, 30, "%"],
+    lc_hmPts: [0, 10, "%"], lc_cvPts: [0, 10, "%"], lc_hlPts: [0, 10, "%"], lc_dsPts: [0, 10, "%"],
+    sqft: [0, 50000, "sq ft"], rehabPsf: [0, 500, "$/sq ft"]
+  };
+  var MAXMONEY = 100000000;
+  function parse(raw) {
+    var s = String(raw == null ? "" : raw).trim().toLowerCase().replace(/[$,%\s]/g, "");
+    if (!s) return NaN;
+    var mult = 1;
+    if (/k$/.test(s)) { mult = 1e3; s = s.slice(0, -1); } else if (/m$/.test(s)) { mult = 1e6; s = s.slice(0, -1); }
+    if (!/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+    return parseFloat(s) * mult;
+  }
+  function lim(id) { return L[id] || [0, MAXMONEY, ""]; }
+  function val(id) {
+    var el = document.getElementById(id); if (!el) return 0;
+    var v = parse(el.value); if (!isFinite(v)) return 0;
+    var l = lim(id); return Math.min(Math.max(v, l[0]), l[1]);
+  }
+  function problem(el) {
+    var raw = String(el.value || "").trim(); if (!raw) return "";
+    var v = parse(raw), l = lim(el.id);
+    if (!isFinite(v)) return "Enter a number, like 150000 or 150k.";
+    if (v < l[0]) return "Can't be below " + l[0] + (l[2] === "%" ? "%" : "") + ".";
+    if (v > l[1]) return "Max is " + l[1].toLocaleString("en-US") + (l[2] === "%" ? "%" : l[2] ? " " + l[2] : "") + ". Using " + l[1].toLocaleString("en-US") + ".";
+    return "";
+  }
+  function check(el) {
+    if (!el || el.tagName !== "INPUT" || el.inputMode !== "decimal") return;
+    var msg = problem(el), box = el.closest(".in");
+    if (box) box.classList.toggle("bad", !!msg);
+    el.setAttribute("aria-invalid", msg ? "true" : "false");
+    var f = el.closest(".field") || el.closest("td") || box && box.parentNode, tip = f && f.querySelector(".err");
+    if (msg && f) { if (!tip) { tip = document.createElement("div"); tip.className = "err"; tip.setAttribute("role", "alert"); f.appendChild(tip); } tip.textContent = msg; }
+    else if (tip) tip.remove();
+  }
+  document.addEventListener("input", function (e) { check(e.target); }, true);
+  document.addEventListener("focusout", function (e) {
+    var el = e.target; if (!el || el.inputMode !== "decimal" || problem(el)) return;
+    var v = parse(el.value); if (!isFinite(v)) return;
+    if (/k$|m$/i.test(String(el.value).trim()) || Math.abs(v) >= 1000) el.value = v.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  }, true);
+  return { parse: parse, val: val, check: check, limits: L };
+})();
+</script>
+<script>
+(function () {
+  var FIELDS = ["address","asking","premium","sqft","arv","rehabLevel","rehabEst","rehabPsf","contPct","months","hIns","hTax","hUtil","hInt","hMow","commPct","sTitlePct","repairPct","photos","bTitlePct","lender","appraisal","dd","profitAmt","rulePct","wMonths","wDrop","wConc"];
+  var DEFAULTS = { premium: 0, contPct: 10, months: 6, commPct: 6, sTitlePct: 1.5, repairPct: 1.5, photos: 300, bTitlePct: 1.5, profitAmt: 30000, rulePct: 70, wMonths: 10, wDrop: 5, wConc: 3 };
+  var EXAMPLE = Object.assign({}, DEFAULTS, { address: "Example: 3 bed ranch (sample numbers)", asking: 99000, sqft: 1250, arv: 215000, rehabLevel: "heavy", rehabPsf: 35, rehabEst: 43750, psfLead: true, hIns: 140, hTax: 150, hUtil: 200, hInt: 1250, hMow: 60, lender: 3000, appraisal: 500, dd: 700 });
+  var KEY = "flipCalc.v2";
+  var $ = function (id) { return document.getElementById(id); };
+
+  // Rehab checklist: [category, [[label, ballpark cost], ...]]
+  var REHAB = [
+    ["Roof, gutters and exterior walls", [
+      ["Roof tear-off and replace (asphalt shingles)", 11000], ["Roof repair / patch", 1500], ["Add layer or replace roof decking (sheathing)", 2500],
+      ["Flat or low-slope roof section", 4000], ["Gutters and downspouts", 1800], ["Gutter guards", 900],
+      ["Fascia and soffit repair", 1500], ["Fascia and soffit replace (wrap)", 4000], ["Siding replace (vinyl)", 12000],
+      ["Siding repair", 1500], ["Exterior paint", 5000], ["Brick tuckpointing / masonry repair", 2500],
+      ["Chimney repair or rebuild above roof", 2500], ["Chimney cap / flashing", 600], ["Chimney removal", 3500],
+      ["Pressure wash house, walks and drive", 450]
+    ]],
+    ["Windows and exterior doors", [
+      ["Replace all windows (vinyl)", 9000], ["Replace a few windows", 2500], ["Window repair / new glass / screens", 600],
+      ["Basement egress window", 4500], ["Glass block basement windows", 1500], ["Front entry door", 1600],
+      ["Back or side door", 1000], ["Sliding patio door", 2200], ["Storm doors", 500], ["Exterior trim / window wrap", 1200],
+      ["Shutters", 400]
+    ]],
+    ["Garage, porch and outdoor structures", [
+      ["Garage door replace", 1800], ["Garage door opener", 450], ["Garage roof replace", 3500], ["Garage siding / paint", 2000],
+      ["Garage slab repair", 2500], ["Detached garage demolition", 6000], ["Carport or shed removal", 1200],
+      ["Front porch / stoop repair", 2500], ["Porch rebuild", 7000], ["Deck repair and stain", 1500], ["New or replacement deck", 8000],
+      ["Patio (concrete or pavers)", 4500], ["Railings (exterior)", 1200]
+    ]],
+    ["Driveway, yard and drainage", [
+      ["Driveway replace (concrete)", 6500], ["Driveway asphalt replace", 4500], ["Driveway patch / seal", 600],
+      ["Sidewalk / walkway replace", 2000], ["Concrete steps", 1800], ["Landscaping cleanup and mulch", 1500],
+      ["New landscaping beds and shrubs", 3000], ["Tree removal", 1500], ["Stump grinding", 400], ["Tree trimming", 800],
+      ["Sod or seed the lawn", 1200], ["Grading / regrading away from house", 2500], ["French drain / drainage fix", 4000],
+      ["Downspout extensions / underground drains", 800], ["Fence repair", 1000], ["Fence replace (privacy)", 6000],
+      ["Exterior lighting", 450], ["Mailbox and house numbers", 150]
+    ]],
+    ["Foundation and structure", [
+      ["Foundation crack repair", 1500], ["Basement wall bracing (bowing walls)", 9000], ["Piering / underpinning", 12000],
+      ["Basement waterproofing (interior drain)", 7000], ["Sump pump install or replace", 1200], ["Battery backup sump pump", 700],
+      ["Crawlspace vapor barrier / encapsulation", 5000], ["Crawlspace support posts / jacks", 2500], ["Sister or replace floor joists", 3500],
+      ["Subfloor replace (sections)", 2500], ["Beam / load-bearing wall repair", 5000], ["Structural engineer report", 600],
+      ["Termite treatment", 1000], ["Termite / rot damage repair", 3000], ["Remove a wall (open floor plan)", 3500],
+      ["Stairs rebuild (interior)", 2500]
+    ]],
+    ["Heating, cooling and water heater", [
+      ["Furnace replace", 4500], ["AC condenser and coil replace", 4500], ["Full HVAC system replace", 8500], ["Heat pump system", 9500],
+      ["Boiler replace", 8000], ["Ductwork repair or new runs", 3000], ["Full ductwork replace", 7000], ["HVAC service / clean and tune", 300],
+      ["Duct cleaning", 500], ["Thermostat (smart)", 250], ["Water heater (tank)", 1600], ["Tankless water heater", 3800],
+      ["Mini-split for addition or garage", 4000], ["Dryer vent reroute", 300]
+    ]],
+    ["Electrical", [
+      ["Rewire whole house (incl. knob-and-tube)", 13000], ["Electrical panel replace / upgrade", 2800], ["Service upgrade (meter base, 200 amp)", 3500],
+      ["Replace outlets and switches", 1200], ["GFCI / AFCI updates", 800], ["Light fixtures (whole house)", 1500], ["Recessed lighting", 1800],
+      ["Ceiling fans", 600], ["Smoke and CO detectors", 300], ["Add circuits (kitchen, laundry)", 1200], ["Doorbell / video doorbell", 200],
+      ["Exterior outlets", 300], ["Electrical permit and inspection fixes", 800]
+    ]],
+    ["Plumbing", [
+      ["Repipe whole house (PEX)", 6500], ["Main sewer line replace", 9000], ["Sewer line spot repair", 3500], ["Sewer scope / camera inspection", 300],
+      ["Root cleaning / jetting sewer line", 500], ["Water main / service line replace", 3500], ["Drain and vent repairs", 1200],
+      ["Replace cast iron drain stack", 3000], ["Main shutoff and pressure regulator", 500], ["Faucets and fixtures (whole house)", 900],
+      ["Hose bibs", 300], ["Laundry hookups / relocate laundry", 1200], ["Gas line repair or new run", 800], ["Water softener", 1500],
+      ["Well pump replace", 1800], ["Well inspection / water test", 500], ["Septic pump and inspection", 600], ["Septic repair / drain field", 10000],
+      ["Connect to city sewer / water", 8000]
+    ]],
+    ["Kitchen", [
+      ["Full kitchen remodel", 22000], ["New cabinets", 9000], ["Paint or reface cabinets", 2500], ["Cabinet hardware", 300],
+      ["Countertops (quartz or granite)", 3800], ["Countertops (laminate / butcher block)", 1400], ["Tile backsplash", 1000],
+      ["Kitchen sink and faucet", 650], ["Garbage disposal", 300], ["Appliance package (range, fridge, dishwasher, microwave)", 3800],
+      ["Range hood vented outside", 500], ["Kitchen island", 2500], ["Kitchen lighting", 600], ["Pantry or added cabinets", 1200]
+    ]],
+    ["Bathrooms", [
+      ["Full bathroom remodel", 11000], ["Half bath remodel", 4500], ["Add a half bath", 9000], ["Add a full bath", 18000],
+      ["Vanity and top", 900], ["Toilet", 400], ["Tub replace", 1800], ["Tub refinish / reglaze", 550], ["Shower / tub surround", 2200],
+      ["Tile shower", 4500], ["Bathroom floor tile", 1500], ["Exhaust fan (vented outside)", 350], ["Mirror, lighting and accessories", 400],
+      ["Shower valve and trim", 500], ["Subfloor / water damage repair under bath", 1500]
+    ]],
+    ["Walls, ceilings and paint", [
+      ["Interior paint (whole house)", 5500], ["Interior paint (a few rooms)", 1800], ["Paint interior doors", 1200], ["Paint exterior doors", 400], ["Drywall patch and repair", 1500],
+      ["Drywall replace (rooms or plaster removal)", 4500], ["Plaster repair / skim coat", 3000], ["Popcorn ceiling removal", 2000],
+      ["Ceiling water stain / leak repair", 800], ["Paneling removal and drywall", 2500], ["Wallpaper removal", 1000]
+    ]],
+    ["Flooring", [
+      ["LVP flooring (whole main level)", 7000], ["LVP flooring (a few rooms)", 3000], ["Carpet (bedrooms)", 3000],
+      ["Refinish hardwood floors", 3500], ["Install new hardwood", 9000], ["Tile flooring (kitchen / entry)", 2500],
+      ["Stair treads / carpet runner", 1200], ["Floor leveling", 1500], ["Remove old flooring / tack strips", 800]
+    ]],
+    ["Doors, trim and finishes", [
+      ["Interior doors (whole house)", 2200], ["Closet doors", 900], ["Door hardware (whole house)", 450], ["Baseboard and casing trim", 1800],
+      ["Crown molding", 1500], ["Stair railing and balusters", 1500], ["Closet shelving / organizers", 600], ["Window blinds", 500],
+      ["Fireplace repair / clean and inspect", 700], ["Fireplace mantel / surround update", 1500], ["Gas fireplace insert", 3500],
+      ["Attic access / pull-down ladder", 400]
+    ]],
+    ["Insulation and energy", [
+      ["Attic insulation (blown-in)", 2000], ["Wall insulation", 3500], ["Air sealing", 800], ["Attic ventilation / ridge vents", 900],
+      ["Rim joist / basement insulation", 1200]
+    ]],
+    ["Basement and attic", [
+      ["Finish the basement", 18000], ["Basement paint / seal walls", 1200], ["Basement egress / bedroom conversion", 6000],
+      ["Basement stairs / handrail", 900], ["Attic conversion / storage floor", 2500]
+    ]],
+    ["Environmental and safety", [
+      ["Mold remediation", 3500], ["Asbestos testing", 500], ["Asbestos abatement (pipe wrap, tile, siding)", 3500],
+      ["Lead-safe paint work (pre-1978)", 1500], ["Radon test", 200], ["Radon mitigation system", 1200], ["Pest / rodent removal", 500],
+      ["Animal damage / wildlife removal", 800], ["Smoke or pet odor remediation", 1500], ["Fire / water damage restoration", 8000],
+      ["Underground oil tank removal", 3000], ["Hoarder / biohazard cleanup", 4000]
+    ]],
+    ["Job costs and cleanup", [
+      ["Building permits", 1200], ["Dumpsters", 1500], ["Trash-out / cleanout before work", 2500], ["Demolition labor", 2500],
+      ["Portable toilet", 250], ["Final construction clean", 600], ["Final inspections / city code fixes", 1000],
+      ["Utility reconnection or meter fees", 400], ["Lockbox / site security", 200], ["Rekey or new locks", 200]
+    ]]
+  ];
+
+  function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+  var rehabState = { checked: {}, costs: {}, custom: [] };
+  var openCats = {};
+
+  function itemCost(id, def) {
+    var v = rehabState.costs[id];
+    if (v === undefined || v === "") return def;
+    var n = parseFloat(String(v).replace(/[$,\s]/g, ""));
+    return isFinite(n) ? n : 0;
+  }
+  function fmtInput(n) { return Math.round(n).toLocaleString("en-US"); }
+  // Rehab $/sq ft: when psfLead is true the typed rate drives the estimate; otherwise the rate is figured from the estimate.
+  var psfLead = false;
+
+  // Rehab levels: $/sq ft by scope
+  var LV = {
+    light: { psf: 15, label: "Light", desc: "Minimal updating to match comps, like new flooring only or paint touch-up." },
+    average: { psf: 27.5, label: "Average", desc: "General cosmetic update: flooring, paint, kitchen, bathrooms, light fixtures. No major repairs." },
+    heavy: { psf: 35, label: "Heavy", desc: "Cosmetic update plus a rough house that needs major repairs." },
+    veryheavy: { psf: 40, label: "Very heavy", desc: "Cosmetics plus a house in terrible shape: holes in walls, junk, broken windows, rotted ceilings." },
+    custom: { psf: null, label: "Custom", desc: "Your own number. Type a rate per sq ft or a total estimate." }
+  };
+  function levelFromPsf() {
+    var raw = String($("rehabPsf").value || "").trim(), p = parseFloat(raw.replace(/[$,\s]/g, ""));
+    var sel = $("rehabLevel"), match = "custom";
+    Object.keys(LV).forEach(function (k) { if (LV[k].psf !== null && LV[k].psf === p) match = k; });
+    if (sel.value !== match && !(sel.value === "custom" && match === "custom")) sel.value = match;
+    if (!sel.value) sel.value = "custom";
+    $("levelHint").textContent = LV[sel.value].desc;
+  }
+  function psfFromEst() {
+    var s = num("sqft");
+    $("rehabPsf").value = s > 0 && has("rehabEst") ? (num("rehabEst") / s).toLocaleString("en-US", { maximumFractionDigits: 2 }) : "";
+  }
+  function estFromPsf() {
+    var s = num("sqft");
+    if (s > 0 && has("rehabPsf")) $("rehabEst").value = fmtInput(s * num("rehabPsf"));
+  }
+  function psfMoney(n, s) { return s > 0 && isFinite(n) ? "$" + (n / s).toFixed(2) : "—"; }
+
+  function buildChecklist() {
+    var host = $("cats");
+    host.innerHTML = "";
+    REHAB.forEach(function (cat, ci) {
+      var cid = "c-" + slug(cat[0]);
+      var det = document.createElement("details");
+      det.className = "cat"; det.dataset.cat = cid;
+      if (openCats[cid]) det.open = true;
+      det.innerHTML = '<summary><span class="cat-name"></span><span class="cat-count"></span><span class="cat-sub">$0</span></summary><div class="items"></div>';
+      det.querySelector(".cat-name").textContent = cat[0];
+      det.addEventListener("toggle", function () { openCats[cid] = det.open; });
+      var box = det.querySelector(".items");
+      cat[1].forEach(function (it) {
+        var id = "r-" + slug(it[0]);
+        box.appendChild(itemRow(id, it[0], it[1], false));
+      });
+      host.appendChild(det);
+    });
+    // Your own items
+    var cid = "c-custom";
+    var det = document.createElement("details");
+    det.className = "cat"; det.dataset.cat = cid;
+    if (openCats[cid]) det.open = true;
+    det.innerHTML = '<summary><span class="cat-name">Your own items</span><span class="cat-count"></span><span class="cat-sub">$0</span></summary><div class="items"></div>' +
+      '<div class="custom-add"><div class="in"><input id="customName" type="text" placeholder="Item, e.g. Rebuild back porch roof" aria-label="Custom item name"></div>' +
+      '<div class="in cost"><span>$</span><input id="customCost" inputmode="decimal" placeholder="0" aria-label="Custom item cost"></div>' +
+      '<button type="button" id="customAdd">Add item</button></div>';
+    det.addEventListener("toggle", function () { openCats[cid] = det.open; });
+    var box = det.querySelector(".items");
+    rehabState.custom.forEach(function (c, i) { box.appendChild(itemRow("u-" + i, c.name, c.cost, true, i)); });
+    host.appendChild(det);
+    $("customAdd").addEventListener("click", addCustom);
+    $("customName").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addCustom(); } });
+    $("customCost").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addCustom(); } });
+    updateChecklist(false);
+  }
+
+  function itemRow(id, label, def, custom, idx) {
+    var row = document.createElement("div");
+    row.className = "item"; row.dataset.id = id; row.dataset.def = def;
+    var cb = document.createElement("input");
+    cb.type = "checkbox"; cb.id = "cb-" + id; cb.dataset.role = "check";
+    cb.checked = custom ? !!rehabState.custom[idx].checked : !!rehabState.checked[id];
+    var lab = document.createElement("label");
+    lab.htmlFor = cb.id; lab.textContent = label;
+    var wrap = document.createElement("div"); wrap.className = "in";
+    wrap.innerHTML = "<span>$</span>";
+    var inp = document.createElement("input");
+    inp.id = "cost-" + id; inp.inputMode = "decimal"; inp.dataset.role = "cost";
+    inp.setAttribute("aria-label", label + " cost");
+    inp.value = fmtInput(custom ? rehabState.custom[idx].cost : itemCost(id, def));
+    wrap.appendChild(inp);
+    row.appendChild(cb); row.appendChild(lab); row.appendChild(wrap);
+    if (custom) {
+      var rm = document.createElement("button");
+      rm.type = "button"; rm.className = "rm"; rm.textContent = "×"; rm.setAttribute("aria-label", "Remove " + label);
+      rm.addEventListener("click", function () { rehabState.custom.splice(idx, 1); buildChecklist(); syncRehab(); render(); save(); });
+      row.appendChild(rm);
+    }
+    if (cb.checked) row.classList.add("on");
+    return row;
+  }
+
+  function addCustom() {
+    var name = $("customName").value.trim();
+    if (!name) { $("customName").focus(); return; }
+    var cost = parseFloat(String($("customCost").value).replace(/[$,\s]/g, "")) || 0;
+    rehabState.custom.push({ name: name, cost: cost, checked: true });
+    openCats["c-custom"] = true;
+    buildChecklist(); syncRehab(); render(); save();
+  }
+
+  function checklistTotal() {
+    var total = 0, count = 0;
+    document.querySelectorAll("#cats details.cat").forEach(function (det) {
+      var sub = 0, n = 0;
+      det.querySelectorAll(".item").forEach(function (row) {
+        var cb = row.querySelector('[data-role="check"]');
+        var v = parseFloat(String(row.querySelector('[data-role="cost"]').value).replace(/[$,\s]/g, "")) || 0;
+        row.classList.toggle("on", cb.checked);
+        if (cb.checked) { sub += v; n++; }
+      });
+      var s = det.querySelector(".cat-sub");
+      s.textContent = money(sub); s.classList.toggle("on", n > 0);
+      det.querySelector(".cat-count").textContent = n ? n + " checked" : "";
+      total += sub; count += n;
+    });
+    return { total: total, count: count };
+  }
+
+  function updateChecklist() {
+    var t = checklistTotal();
+    $("clTotal").textContent = money(t.total);
+    $("clCount").textContent = t.count ? "(" + t.count + ")" : "";
+    return t;
+  }
+
+  function syncRehab() {
+    var t = updateChecklist();
+    if (t.count > 0) {
+      $("rehabEst").value = fmtInput(t.total);
+      $("rehabHint").textContent = "Filled in from " + t.count + " checklist item" + (t.count === 1 ? "" : "s");
+      psfLead = false;
+    } else {
+      $("rehabHint").textContent = "Type a contractor's number, or check items below";
+    }
+    if (!psfLead) psfFromEst();
+  }
+
+  function readChecklistInputs() {
+    document.querySelectorAll("#cats .item").forEach(function (row) {
+      var id = row.dataset.id;
+      var cb = row.querySelector('[data-role="check"]');
+      var cost = row.querySelector('[data-role="cost"]').value;
+      if (id.indexOf("u-") === 0) {
+        var c = rehabState.custom[parseInt(id.slice(2), 10)];
+        if (c) { c.checked = cb.checked; c.cost = parseFloat(String(cost).replace(/[$,\s]/g, "")) || 0; }
+      } else {
+        if (cb.checked) rehabState.checked[id] = true; else delete rehabState.checked[id];
+        if (String(parseFloat(String(cost).replace(/[$,\s]/g, ""))) === String(row.dataset.def) || cost === "") delete rehabState.costs[id];
+        else rehabState.costs[id] = cost;
+      }
+    });
+  }
+
+  function resetChecklist(keepCustom) {
+    rehabState.checked = {};
+    rehabState.costs = {};
+    if (keepCustom) rehabState.custom.forEach(function (c) { c.checked = false; }); else rehabState.custom = [];
+    buildChecklist();
+  }
+
+  function num(id) { return window.FlipInput.val(id); }
+  function has(id) { return String($(id).value || "").trim() !== ""; }
+  function money(n) {
+    if (!isFinite(n)) return "—";
+    var r = Math.round(Math.abs(n)); if (r === 0) return "$0";
+    var s = "$" + r.toLocaleString("en-US");
+    return n < 0 ? "−" + s : s;
+  }
+  function signed(n) { return (n >= 0 ? "+" : "") + money(n); }
+
+  function fill(obj) {
+    psfLead = !!obj.psfLead;
+    FIELDS.forEach(function (f) {
+      var v = obj[f];
+      $(f).value = (v === undefined || v === null) ? "" : (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: 2 }) : v);
+    });
+  }
+  function read() { var o = {}; FIELDS.forEach(function (f) { o[f] = $(f).value; }); o.psfLead = psfLead; return o; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ v: read(), example: isExample, rehab: rehabState })); } catch (e) {} }
+
+  var isExample = true;
+
+  function compute() {
+    var asking = num("asking"), prem = num("premium") / 100, arv = num("arv");
+    var price = asking * (1 + prem);
+    var rehab = num("rehabEst") * (1 + num("contPct") / 100);
+    var hMonth = num("hIns") + num("hTax") + num("hUtil") + num("hInt") + num("hMow");
+    var months = num("months");
+    var hold = hMonth * months;
+    var repair = rehab * num("repairPct") / 100;
+    var sellPct = (num("commPct") + num("sTitlePct")) / 100;
+    var sell = arv * sellPct + repair + num("photos");
+    var acqFixed = num("lender") + num("appraisal") + num("dd");
+    var bTitle = num("bTitlePct") / 100;
+    var acq = price * bTitle + acqFixed;
+    var profitTarget = num("profitAmt");
+
+    // MAO by true cost: solve for price P where ARV - target - hold - sell - rehab - (P*bTitle + fixed) = P
+    var mao1 = (arv - profitTarget - hold - sell - rehab - acqFixed) / (1 + bTitle);
+    var mao2 = arv * num("rulePct") / 100 - rehab;
+    var offer = Math.min(mao1, mao2);
+    var bid = offer / (1 + prem);
+
+    var profit = arv - price - rehab - hold - sell - acq;
+    var wArv = arv * (1 - num("wDrop") / 100);
+    var wHold = hMonth * num("wMonths");
+    var wSell = wArv * sellPct + repair + num("photos");
+    var wConc = wArv * num("wConc") / 100;
+    var worst = wArv - price - rehab - wHold - wSell - wConc - acq;
+
+    return { asking: asking, prem: prem, arv: arv, price: price, rehab: rehab, hMonth: hMonth, hold: hold, sell: sell, acq: acq,
+      profitTarget: profitTarget, mao1: mao1, mao2: mao2, offer: offer, bid: bid, profit: profit, worst: worst, months: months };
+  }
+
+  function setText(id, t, cls) { var el = $(id); el.textContent = t; el.classList.remove("pos","neg"); if (cls) el.classList.add(cls); }
+
+  function render() {
+    var r = compute();
+    var ready = has("asking") && has("arv") && r.arv > 0;
+    setText("o_price", has("asking") ? money(r.price) : "—");
+    setText("o_rehab", has("rehabEst") ? money(r.rehab) : "—");
+    var sq = num("sqft");
+    setText("o_rpsf", has("rehabEst") ? psfMoney(r.rehab, sq) : "—");
+    setText("o_ppsf", has("asking") ? psfMoney(r.price, sq) : "—");
+    setText("o_apsf", has("arv") ? psfMoney(r.arv, sq) : "—");
+    $("psfHint").textContent = sq > 0 ? "Set by the rehab level, or type your own rate" : "Enter square footage in section 1 to use this";
+    levelFromPsf();
+    setText("o_hmo", money(r.hMonth));
+    setText("o_hold", money(r.hold));
+    setText("o_sell", has("arv") ? money(r.sell) : "—");
+    setText("o_acq", money(r.acq));
+
+    var v = $("verdict");
+    v.className = "verdict";
+    if (!ready) {
+      v.classList.add("empty");
+      $("vTag").textContent = "WAITING";
+      $("vHead").textContent = "Enter an asking price and ARV";
+      $("vText").textContent = "The verdict appears once the deal has an asking price and an after-repair value.";
+      ["r_mao1","r_mao2","r_offer","r_bid","r_room","r_profit","r_pct","r_worst"].forEach(function (id) { setText(id, "—"); });
+      $("bidRow").hidden = true;
+      drawBar(null);
+      return r;
+    }
+
+    setText("r_mao1", money(r.mao1));
+    setText("r_mao2", money(r.mao2));
+    setText("r_offer", money(r.offer));
+    $("bidRow").hidden = !(r.prem > 0);
+    setText("r_bid", money(r.bid));
+    var room = r.offer - r.price;
+    setText("r_room", signed(room), room >= 0 ? "pos" : "neg");
+    setText("r_profit", money(r.profit), r.profit >= r.profitTarget - 0.5 ? "pos" : "neg");
+    setText("r_pct", (r.profit / r.arv * 100).toFixed(1) + "%", r.profit >= r.profitTarget - 0.5 ? "pos" : "neg");
+    setText("r_worst", money(r.worst), r.worst > 0 ? "pos" : "neg");
+
+    var head, text;
+    if (room < 0) {
+      v.classList.add("pass");
+      $("vTag").textContent = "PASS OR NEGOTIATE";
+      head = "Asking is " + money(-room) + " over your max";
+      text = "Offer " + money(r.offer) + (r.prem > 0 ? " total (a bid of " + money(r.bid) + ")" : "") + " or walk away. At asking you'd make " + (r.profit / r.arv * 100).toFixed(1) + "% of ARV.";
+    } else if (r.worst <= 0) {
+      v.classList.add("caution");
+      $("vTag").textContent = "CAUTION";
+      head = "Works at asking, fails the worst case";
+      text = "Profit at asking is " + money(r.profit) + ", but a slow sale, lower ARV and concessions together would lose " + money(-r.worst) + ".";
+    } else {
+      v.classList.add("go");
+      $("vTag").textContent = "GO";
+      head = "Works at asking with room to spare";
+      text = "Profit at asking is " + money(r.profit) + " (" + (r.profit / r.arv * 100).toFixed(1) + "% of ARV) and still " + money(r.worst) + " in the worst case.";
+    }
+    $("vHead").textContent = head;
+    $("vText").textContent = text;
+    drawBar(r);
+    return r;
+  }
+
+  function drawBar(r) {
+    var bar = $("bar"), legend = $("legend");
+    bar.innerHTML = ""; legend.innerHTML = "";
+    var parts = r ? [
+      ["Purchase", r.price, "--seg-1"], ["Rehab", r.rehab, "--seg-2"], ["Holding", r.hold, "--seg-3"],
+      ["Selling", r.sell, "--seg-4"], ["Acquisition", r.acq, "--seg-5"], [r.profit >= 0 ? "Profit" : "Loss", Math.max(r.profit, 0), "--seg-6"]
+    ] : [];
+    var total = parts.reduce(function (s, p) { return s + Math.max(p[1], 0); }, 0);
+    parts.forEach(function (p) {
+      var w = total > 0 ? Math.max(p[1], 0) / total * 100 : 0;
+      var d = document.createElement("div");
+      d.style.width = w + "%"; d.style.background = "var(" + p[2] + ")"; d.title = p[0] + ": " + money(p[1]);
+      bar.appendChild(d);
+      var l = document.createElement("span");
+      var label = p[0] === "Loss" ? "Loss " + money(r.profit) : p[0] + " " + money(p[1]);
+      l.innerHTML = '<i style="background:var(' + p[2] + ')"></i>';
+      l.appendChild(document.createTextNode(label));
+      legend.appendChild(l);
+    });
+    if (!r) legend.textContent = "Fills in once the deal has numbers.";
+  }
+
+  function summary() {
+    var r = compute();
+    var lines = [
+      "Deal: " + ($("address").value || "(no address)"),
+      "Asking: " + money(r.asking) + (r.prem > 0 ? " + " + (r.prem * 100) + "% premium = " + money(r.price) : ""),
+      "Size: " + (num("sqft") > 0 ? num("sqft").toLocaleString("en-US") + " sq ft" : "(not entered)") + " | ARV/sq ft: " + psfMoney(r.arv, num("sqft")),
+      "ARV: " + money(r.arv) + " | Rehab: " + money(r.rehab) + " (" + psfMoney(r.rehab, num("sqft")) + "/sq ft)",
+      "Holding: " + money(r.hold) + " | Selling: " + money(r.sell) + " | Acquisition: " + money(r.acq),
+      "MAO true cost: " + money(r.mao1) + " | MAO rule: " + money(r.mao2),
+      "Max total price: " + money(r.offer) + (r.prem > 0 ? " (max bid " + money(r.bid) + ")" : ""),
+      "Profit at asking: " + money(r.profit) + " | Worst case: " + money(r.worst),
+      "Verdict: " + $("vTag").textContent
+    ];
+    var picked = [];
+    document.querySelectorAll("#cats .item").forEach(function (row) {
+      if (row.querySelector('[data-role="check"]').checked) {
+        picked.push("  - " + row.querySelector("label").textContent + ": " + money(parseFloat(String(row.querySelector('[data-role="cost"]').value).replace(/[$,\s]/g, "")) || 0));
+      }
+    });
+    if (picked.length) { lines.push("Rehab checklist:"); lines = lines.concat(picked); }
+    return lines.join("\n");
+  }
+
+  function setExampleFlag(flag) { isExample = flag; $("exampleNote").hidden = !flag; }
+
+  // Checklist edits run first (bubbling reaches #cats before #form), so the estimate is synced before render.
+  $("cats").addEventListener("input", function (e) {
+    var role = e.target && e.target.dataset ? e.target.dataset.role : "";
+    if (role === "check" || role === "cost") { readChecklistInputs(); syncRehab(); }
+  });
+  $("cats").addEventListener("change", function (e) {
+    if (e.target && e.target.dataset && e.target.dataset.role === "check") { readChecklistInputs(); syncRehab(); render(); save(); }
+  });
+  $("cats").addEventListener("focusout", function (e) {
+    if (e.target && e.target.dataset && e.target.dataset.role === "cost") {
+      var n = parseFloat(String(e.target.value).replace(/[$,\s]/g, ""));
+      e.target.value = isFinite(n) ? fmtInput(n) : "0";
+    }
+  });
+  $("clExpand").addEventListener("click", function () { document.querySelectorAll("#cats details.cat").forEach(function (d) { d.open = true; }); });
+  $("clCollapse").addEventListener("click", function () { document.querySelectorAll("#cats details.cat").forEach(function (d) { d.open = false; }); });
+  $("clReset").addEventListener("click", function () { resetChecklist(true); syncRehab(); render(); save(); });
+
+  $("form").addEventListener("input", function (e) {
+    if (isExample) setExampleFlag(false);
+    var tid = e.target && e.target.id;
+    if (tid === "rehabLevel" && LV[$("rehabLevel").value] && LV[$("rehabLevel").value].psf !== null) {
+      $("rehabPsf").value = LV[$("rehabLevel").value].psf;
+      psfLead = true; estFromPsf();
+      if (updateChecklist().count > 0) $("rehabHint").textContent = "Set from the rehab level; checking another item will refill it";
+    } else if (tid === "rehabPsf") {
+      psfLead = true; estFromPsf();
+      if (updateChecklist().count > 0) $("rehabHint").textContent = "Set from cost per sq ft; checking another item will refill it";
+    } else if (tid === "rehabEst") {
+      psfLead = false; psfFromEst();
+    } else if (tid === "sqft") {
+      if (psfLead) estFromPsf(); else psfFromEst();
+    }
+    if (tid === "rehabEst" && updateChecklist().count > 0) {
+      $("rehabHint").textContent = "Typed over the checklist total; checking another item will refill it";
+    }
+    render(); save();
+  });
+  $("form").addEventListener("submit", function (e) { e.preventDefault(); });
+  $("btnExample").addEventListener("click", function () { if (window.lcReset) window.lcReset(); fill(EXAMPLE); resetChecklist(false); syncRehab(); setExampleFlag(true); render(); save(); });
+  var resetArmed = null;
+  $("btnClear").addEventListener("click", function () {
+    var btn = $("btnClear");
+    if (!resetArmed) {
+      btn.textContent = "Click again to erase"; btn.classList.add("arm");
+      resetArmed = setTimeout(function () { resetArmed = null; btn.textContent = "Reset"; btn.classList.remove("arm"); }, 4000);
+      return;
+    }
+    clearTimeout(resetArmed); resetArmed = null; btn.textContent = "Reset"; btn.classList.remove("arm");
+    fill(DEFAULTS); resetChecklist(false); syncRehab(); setExampleFlag(false); render(); save();
+    if (window.lcReset) window.lcReset();
+    var st = $("copyStatus"); st.textContent = "Deal erased. Ready for a new one."; setTimeout(function () { st.textContent = ""; }, 3000);
+    window.scrollTo(0, 0); $("address").focus();
+  });
+  $("btnCopy").addEventListener("click", function () {
+    var text = summary(), status = $("copyStatus");
+    function done(msg) { status.textContent = msg; setTimeout(function () { status.textContent = ""; }, 2500); }
+    try {
+      navigator.clipboard.writeText(text).then(function () { done("Summary copied."); }, function () { done("Copy didn't work here; select the numbers manually."); });
+    } catch (e) { done("Copy didn't work here; select the numbers manually."); }
+  });
+
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+  if (saved && saved.rehab && typeof saved.rehab === "object") {
+    rehabState.checked = saved.rehab.checked || {};
+    rehabState.costs = saved.rehab.costs || {};
+    rehabState.custom = Array.isArray(saved.rehab.custom) ? saved.rehab.custom : [];
+  }
+  if (saved && saved.v) { fill(saved.v); setExampleFlag(!!saved.example); } else { fill(EXAMPLE); setExampleFlag(true); }
+  buildChecklist();
+  if (updateChecklist().count > 0) $("rehabHint").textContent = "Filled in from the checklist";
+  if (!psfLead && !has("rehabPsf")) psfFromEst();
+  render();
+})();
+</script>
+<script>
+(function () {
+  var LCKEY = "flipCalc.loans.v2";
+  var D = { lc_bestUp: 3, lc_bestMo: "", lc_ext: 1, lc_hdCover: "all", lc_asis: "", lc_down: 20, lc_agent: 0, lc_months: 6,
+    lc_hmRate: 11, lc_hmPts: 2, lc_hmFees: 1495, lc_hmTerm: 12,
+    lc_cvRate: 7.9, lc_cvPts: 1, lc_cvFees: 1800, lc_cvTerm: 30,
+    lc_hlRate: 7.35, lc_hlPts: 0, lc_hlFees: 500, lc_hlDraw: 10, lc_hlRepay: 20, lc_hmDrawFee: 200, lc_cvDrawFee: 150, lc_hlDrawFee: 0, lc_dutch: "drawn",
+    lc_dsRate: 7.25, lc_dsPts: 1.5, lc_dsFees: 2500, lc_dsTerm: 30, lc_dsLtv: 75 };
+  var IDS = Object.keys(D);
+  var $ = function (id) { return document.getElementById(id); };
+  function n(id) { return window.FlipInput.val(id); }
+  function money(v) { if (!isFinite(v)) return "—"; var r = Math.round(Math.abs(v)); if (r === 0) return "$0"; var s = "$" + r.toLocaleString("en-US"); return v < 0 ? "−" + s : s; }
+  function pmt(L, ratePct, months) { if (L <= 0 || months <= 0) return 0; var r = ratePct / 1200; return r === 0 ? L / months : L * r / (1 - Math.pow(1 + r, -months)); }
+  function bal(L, ratePct, months, k) { if (L <= 0) return 0; var r = ratePct / 1200, p = pmt(L, ratePct, months); if (r === 0) return Math.max(L - p * k, 0); return Math.max(L * Math.pow(1 + r, k) - p * (Math.pow(1 + r, k) - 1) / r, 0); }
+
+  var BASE = function () {
+    var asking = n("asking"), price = asking * (1 + n("premium") / 100);
+    var rehab = n("rehabEst") * (1 + n("contPct") / 100);
+    var closing = price * n("bTitlePct") / 100 + n("appraisal") + n("dd");
+    return { price: price, rehab: rehab, closing: closing, value: n("arv"), holdMo: n("hIns") + n("hTax") + n("hUtil") + n("hMow"), holdLabel: "insurance, taxes, utilities, mowing", closingLabel: "Title + closing, appraisal, due diligence" };
+  };
+
+  function load() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(LCKEY) || "null"); } catch (e) {}
+    IDS.forEach(function (id) { var v = saved && saved[id] !== undefined ? saved[id] : D[id]; $(id).value = v; });
+  }
+  function save() { try { var o = {}; IDS.forEach(function (id) { o[id] = $(id).value; }); localStorage.setItem(LCKEY, JSON.stringify(o)); } catch (e) {} }
+
+  function calc() {
+    var b = BASE();
+    var down = n("lc_down") / 100, m = Math.max(n("lc_months"), 0);
+    var L = b.price * (1 - down);
+    var common = { down: b.price * down, closing: b.closing, agent: b.price * n("lc_agent") / 100, rehab: b.rehab, holdMo: b.holdMo, hold: b.holdMo * m };
+    var loans = [
+      { key: "hm", name: "Hard money", rate: n("lc_hmRate"), pts: n("lc_hmPts"), fees: n("lc_hmFees"), drawFee: n("lc_hmDrawFee") },
+      { key: "cv", name: "Conventional", rate: n("lc_cvRate"), pts: n("lc_cvPts"), fees: n("lc_cvFees"), drawFee: n("lc_cvDrawFee") },
+      { key: "hl", name: "HELOC", rate: n("lc_hlRate"), pts: n("lc_hlPts"), fees: n("lc_hlFees"), drawFee: n("lc_hlDrawFee") }
+    ];
+    var ds = { rate: n("lc_dsRate"), pts: n("lc_dsPts"), fees: n("lc_dsFees"), term: n("lc_dsTerm"), ltv: n("lc_dsLtv") / 100 };
+    var dsLoan = b.value * ds.ltv, dsPmt = pmt(dsLoan, ds.rate, ds.term * 12);
+    var dsLifeInt = dsPmt * ds.term * 12 - dsLoan, dsUp = dsLoan * ds.pts / 100 + ds.fees;
+    // Rehab is financed: drawn in equal monthly draws over the rehab months (one draw at closing if 0 months).
+    var R = b.rehab, draws = m > 0 ? Math.round(m) : (R > 0 ? 1 : 0), d = draws > 0 ? R / draws : 0;
+    var Lfull = L + R;
+    var dutch = $("lc_dutch").value === "full";
+    // interest on a drawn-as-you-go IO balance for k months (draw at the start of each month)
+    function ioDrawn(ratePct, k) {
+      var r = ratePct / 1200, s = 0;
+      for (var i = 1; i <= k; i++) s += (L + d * Math.min(i, draws)) * r;
+      return s;
+    }
+    loans.forEach(function (o) {
+      o.L = Lfull; o.points = Lfull * o.pts / 100; o.drawFees = o.drawFee * draws;
+      o.atClose = common.down + common.closing + common.agent + o.points + o.fees;
+      if (o.key === "hm") {
+        var T = n("lc_hmTerm"), full = Lfull * o.rate / 1200;
+        o.intHold = dutch ? full * m : ioDrawn(o.rate, m);
+        o.payFirst = dutch ? full : (L + (draws ? d : R)) * o.rate / 1200; o.payLast = full;
+        o.balHold = Lfull; o.payHold = o.intHold; o.termLabel = T + " months, interest only, balloon";
+        o.lifeInt = (dutch ? full * T : ioDrawn(o.rate, Math.min(m, T)) + full * Math.max(T - m, 0)); o.lifePaid = o.lifeInt + Lfull;
+        o.lifePay = money(full) + "/mo IO";
+      } else if (o.key === "cv") {
+        var N = n("lc_cvTerm") * 12, p = pmt(Lfull, o.rate, N);
+        o.payFirst = p; o.payLast = p;
+        o.balHold = bal(Lfull, o.rate, N, m); o.payHold = p * m; o.intHold = o.payHold - (Lfull - o.balHold);
+        o.termLabel = n("lc_cvTerm") + "-yr fixed, rehab held in escrow";
+        o.lifeInt = p * N - Lfull; o.lifePaid = p * N; o.lifePay = money(p) + "/mo P&amp;I";
+      } else {
+        var dr = n("lc_hlDraw") * 12, rp = n("lc_hlRepay"), full2 = Lfull * o.rate / 1200, rpPmt = pmt(Lfull, o.rate, rp * 12);
+        o.intHold = ioDrawn(o.rate, m);
+        o.payFirst = (L + (draws ? d : R)) * o.rate / 1200; o.payLast = full2;
+        o.balHold = Lfull; o.payHold = o.intHold; o.termLabel = n("lc_hlDraw") + " yr draw + " + rp + " yr repay";
+        o.lifeInt = ioDrawn(o.rate, Math.min(m, dr)) + full2 * Math.max(dr - m, 0) + (rpPmt * rp * 12 - Lfull);
+        o.lifePaid = o.lifeInt + Lfull; o.lifePay = money(full2) + " IO → " + money(rpPmt);
+      }
+      o.oop = o.atClose + o.payHold + o.drawFees + common.hold;
+      o.lifeCost = o.lifeInt + o.points + o.fees + o.drawFees;
+      o.cashBack = dsLoan - o.balHold - dsUp;
+      o.left = o.oop - o.cashBack;
+      o.finCost = o.points + o.fees + o.drawFees + o.intHold + dsUp + dsLifeInt;
+    });
+    var asis = n("lc_asis") > 0 ? n("lc_asis") : b.price;
+    return { asis: asis, b: b, m: m, L: Lfull, Lp: L, R: R, draws: draws, d: d, common: common, loans: loans, ds: ds, dsLoan: dsLoan, dsPmt: dsPmt, dsLifeInt: dsLifeInt, dsUp: dsUp };
+  }
+
+  function row(label, vals, cls, bestFn) {
+    var best = bestFn && vals.length > 2 ? bestFn(vals) : (bestFn ? bestFn(vals) : -1);
+    return '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + label + '</td>' + vals.map(function (v, i) {
+      return '<td' + (i === best ? ' class="best"' : '') + '>' + (typeof v === "number" ? money(v) : v) + '</td>';
+    }).join("") + '</tr>';
+  }
+  function minIdx(v) { var b = 0; v.forEach(function (x, i) { if (x < v[b]) b = i; }); return b; }
+  function maxIdx(v) { var b = 0; v.forEach(function (x, i) { if (x > v[b]) b = i; }); return b; }
+  function head(extra) { return '<thead><tr><th></th><th>Hard money</th><th>Conventional</th><th>HELOC</th>' + (extra || "") + '</tr></thead>'; }
+
+  function render() {
+    var c = calc(), Ls = c.loans, f = function (k) { return Ls.map(function (o) { return o[k]; }); };
+    var same = function (v) { return [v, v, v]; };
+    var t1 = head() + '<tbody>' +
+      row("Loan amount", f("L")) +
+      row("Purchase (" + (100 - n("lc_down")) + "% of " + money(c.b.price) + ")", same(c.Lp), "sub") +
+      row("Rehab budget, paid in " + c.draws + " draw" + (c.draws === 1 ? "" : "s") + " of " + money(c.d), same(c.R), "sub") +
+      '<tr class="grp"><td colspan="4">Your cash</td></tr>' +
+      row("Down payment (" + n("lc_down") + "% of price)", same(c.common.down), "sub") +
+      row(c.b.closingLabel, same(c.common.closing), "sub") +
+      row("Buyer's agent fee", same(c.common.agent), "sub") +
+      row("Points (on the full loan)", f("points"), "sub") +
+      row("Lender fees", Ls.map(function (o) { return o.fees; }), "sub") +
+      row("Cash due at closing", f("atClose"), "tot", minIdx) +
+      row("Rehab out of pocket", same("$0 · financed"), "sub") +
+      row("Monthly payment, first → last month", Ls.map(function (o) { return money(o.payFirst) + " → " + money(o.payLast); }), "sub") +
+      row("Payments for " + c.m + " months", f("payHold"), "sub") +
+      row("&nbsp;&nbsp;of which interest", f("intHold"), "sub") +
+      row("Draw inspection fees", f("drawFees"), "sub") +
+      row("Holding costs: " + c.b.holdLabel + " (" + money(c.common.holdMo) + "/mo × " + c.m + ")", same(c.common.hold), "sub") +
+      row("Total out of pocket before refi", f("oop"), "tot", minIdx) +
+      '</tbody>';
+    $("lc_t1").innerHTML = t1;
+
+    var t2 = head() + '<tbody>' +
+      row("Loan amount (purchase + rehab)", f("L")) +
+      row("Term", Ls.map(function (o) { return o.termLabel; }), "sub") +
+      row("Payment once fully drawn", Ls.map(function (o) { return o.lifePay; }), "sub") +
+      row("Total interest over the term", f("lifeInt")) +
+      row("Points, lender + draw fees", Ls.map(function (o) { return o.points + o.fees + o.drawFees; }), "sub") +
+      row("Total cost of borrowing", f("lifeCost"), "tot", minIdx) +
+      row("Total paid back (loan + interest)", f("lifePaid"), "sub") +
+      '</tbody>';
+    $("lc_t2").innerHTML = t2;
+
+    var t3 = head() + '<tbody>' +
+      '<tr class="grp"><td colspan="4">DSCR loan: ' + n("lc_dsLtv") + '% of ' + money(c.b.value) + ' value at ' + n("lc_dsRate") + '%, ' + n("lc_dsTerm") + ' years</td></tr>' +
+      row("New DSCR loan", same(c.dsLoan)) +
+      row("Pays off purchase + rehab loan", Ls.map(function (o) { return -o.balHold; }), "sub") +
+      row("DSCR points + fees", same(-c.dsUp), "sub") +
+      row("Cash back to you", f("cashBack"), "tot", maxIdx) +
+      row("Total out of pocket before refi", f("oop"), "sub") +
+      row("Cash left in the deal", Ls.map(function (o) { return o.left >= 0 ? money(o.left) : "$0 (+" + money(-o.left) + " extra)"; }), "tot") +
+      row("DSCR monthly payment (P&amp;I)", same(c.dsPmt)) +
+      row("DSCR interest over " + n("lc_dsTerm") + " years", same(c.dsLifeInt), "sub") +
+      '<tr class="grp"><td colspan="4">Total borrowing cost, purchase through DSCR payoff</td></tr>' +
+      row("Purchase loan points, lender + draw fees", Ls.map(function (o) { return o.points + o.fees + o.drawFees; }), "sub") +
+      row("Purchase loan interest during rehab", f("intHold"), "sub") +
+      row("DSCR points + fees", same(c.dsUp), "sub") +
+      row("DSCR interest, full term", same(c.dsLifeInt), "sub") +
+      row("Total cost of borrowing", f("finCost"), "tot", minIdx) +
+      '</tbody>';
+    $("lc_t3").innerHTML = t3;
+
+    var pct = function (v) { return isFinite(v) ? (v * 100).toFixed(1) + "%" : "—"; };
+    var V = c.b.value, AS = c.asis;
+    var eq0 = Ls.map(function () { return AS - c.Lp; });
+    var eq1 = Ls.map(function (o) { return V - o.balHold; });
+    var eq2 = V - c.dsLoan;
+    var t4 = head() + '<tbody>' +
+      '<tr class="grp"><td colspan="4">At acquisition (day one, before any rehab draws)</td></tr>' +
+      row("As-is value", same(AS)) +
+      row("Owed against it (purchase part of the loan)", same(-c.Lp), "sub") +
+      row("Equity at acquisition", eq0, "tot") +
+      row("Equity % of value", eq0.map(function (e) { return pct(e / AS); }), "sub") +
+      '<tr class="grp"><td colspan="4">After rehab (fully drawn, before the refi)</td></tr>' +
+      row("After-repair value", same(V)) +
+      row("Owed against it (purchase + rehab)", Ls.map(function (o) { return -o.balHold; }), "sub") +
+      row("Equity after rehab", eq1, "tot", maxIdx) +
+      row("Equity % of ARV", eq1.map(function (e) { return pct(e / V); }), "sub") +
+      row("Equity added by the rehab", eq1.map(function (e, i) { return e - eq0[i]; }), "sub") +
+      '<tr class="grp"><td colspan="4">After the DSCR refi</td></tr>' +
+      row("DSCR loan", same(-c.dsLoan), "sub") +
+      row("Equity after refi", same(eq2), "tot") +
+      row("Equity % of ARV", same(pct(eq2 / V)), "sub") +
+      row("Your cash left in the deal", Ls.map(function (o) { return o.left >= 0 ? money(o.left) : "$0 (+" + money(-o.left) + " extra)"; }), "sub") +
+      row("Equity per $1 of your cash", Ls.map(function (o) { return o.left > 0 ? "$" + (eq2 / o.left).toFixed(2) : "all cash back"; }), "sub") +
+      '</tbody>';
+    $("lc_t4").innerHTML = t4;
+
+    var hr = n("lc_hlRate"), hf = n("lc_hlFees"), coverAll = $("lc_hdCover").value === "all";
+    var P5 = [Ls[0], Ls[1]].map(function (o) {
+      var full = c.common.down + c.common.closing + c.common.agent + o.points + o.fees;
+      var H = coverAll ? full : c.common.down;
+      var x = { o: o, H: H };
+      x.cashClose = full - H + hf;
+      x.hInt = H * hr / 1200 * c.m;
+      x.oop = x.cashClose + o.payHold + x.hInt + o.drawFees + c.common.hold;
+      x.cashBack = o.cashBack;
+      x.hPay = Math.min(H, Math.max(o.cashBack, 0));
+      x.hLeft = H - x.hPay;
+      x.net = o.cashBack - x.hPay;
+      x.left = x.oop - x.net;
+      x.monthly = c.dsPmt + x.hLeft * hr / 1200;
+      x.eq0 = AS - c.Lp; x.eq1 = V - o.balHold; x.eq2 = V - c.dsLoan;
+      x.cost = o.points + o.fees + o.drawFees + o.intHold + hf + x.hInt + c.dsUp + c.dsLifeInt;
+      x.saved = o.atClose - x.cashClose;
+      return x;
+    });
+    var g = function (k) { return P5.map(function (x) { return x[k]; }); };
+    var same2 = function (v) { return [v, v]; };
+    var t5 = '<thead><tr><th></th><th>Hard money + HELOC</th><th>Conventional + HELOC</th></tr></thead><tbody>' +
+      '<tr class="grp"><td colspan="3">At closing</td></tr>' +
+      row("HELOC draw", g("H")) +
+      row("Main loan (purchase + rehab)", P5.map(function (x) { return x.o.L; }), "sub") +
+      row("Total borrowed", P5.map(function (x) { return x.o.L + x.H; }), "sub") +
+      row("Total borrowed as % of price + rehab", P5.map(function (x) { var b = c.b.price + c.R; return b > 0 ? ((x.o.L + x.H) / b * 100).toFixed(0) + "%" : "—"; }), "sub") +
+      row("Your cash due at closing" + (coverAll ? " (HELOC fees only)" : " (closing, points, fees)"), g("cashClose"), "tot", minIdx) +
+      row("Saved at closing vs paying the down payment yourself", g("saved"), "sub") +
+      '<tr class="grp"><td colspan="3">During the rehab (' + c.m + ' months)</td></tr>' +
+      row("Main loan payments", P5.map(function (x) { return x.o.payHold; }), "sub") +
+      row("HELOC interest-only payments", g("hInt"), "sub") +
+      row("Monthly total, last month", P5.map(function (x) { return x.o.payLast + x.H * hr / 1200; }), "sub") +
+      row("Draw inspection fees", P5.map(function (x) { return x.o.drawFees; }), "sub") +
+      row("Holding costs (" + c.b.holdLabel + ")", same2(c.common.hold), "sub") +
+      row("Total out of pocket before refi", g("oop"), "tot", minIdx) +
+      '<tr class="grp"><td colspan="3">At the DSCR refi</td></tr>' +
+      row("Cash back from DSCR refi", g("cashBack")) +
+      row("Pays off the HELOC draw", P5.map(function (x) { return -x.hPay; }), "sub") +
+      row("HELOC still owed after refi", g("hLeft"), "sub") +
+      row("Net cash to you", g("net"), "tot", maxIdx) +
+      row("Cash left in the deal", P5.map(function (x) { return x.left >= 0 ? money(x.left) : "$0 (+" + money(-x.left) + " extra)"; }), "tot") +
+      row("Monthly debt after refi (DSCR + any HELOC left)", g("monthly"), "sub") +
+      '<tr class="grp"><td colspan="3">Equity</td></tr>' +
+      row("In the property at acquisition", g("eq0"), "sub") +
+      row("Net of the HELOC at acquisition", P5.map(function (x) { return x.eq0 - x.H; }), "sub") +
+      row("In the property after rehab", g("eq1"), "sub") +
+      row("Net of the HELOC after rehab", P5.map(function (x) { return x.eq1 - x.H; }), "sub") +
+      row("After DSCR refi, net of any HELOC left", P5.map(function (x) { return x.eq2 - x.hLeft; }), "tot") +
+      '<tr class="grp"><td colspan="3">Total cost of borrowing, purchase through DSCR payoff</td></tr>' +
+      row("Main loan points, fees, draw fees + rehab interest", P5.map(function (x) { return x.o.points + x.o.fees + x.o.drawFees + x.o.intHold; }), "sub") +
+      row("HELOC fees + interest", P5.map(function (x) { return hf + x.hInt; }), "sub") +
+      row("DSCR points, fees + full-term interest", same2(c.dsUp + c.dsLifeInt), "sub") +
+      row("Total cost of borrowing", g("cost"), "tot", minIdx) +
+      '</tbody>';
+    $("lc_t5").innerHTML = t5;
+
+    // ---- 6. Flip exit: sell instead of refinancing ----
+    var S = Math.max(n("months"), c.m), dutch6 = $("lc_dutch").value === "full";
+    function drawnInt(ratePct, k) { var r = ratePct / 1200, s = 0; for (var i = 1; i <= k; i++) s += (c.Lp + c.d * Math.min(i, c.draws)) * r; return s; }
+    var hmTerm = n("lc_hmTerm");
+    function scen(Vx, Sx, concPct) {
+      var sell = Vx * (n("commPct") + n("sTitlePct")) / 100 + c.b.rehab * n("repairPct") / 100 + n("photos");
+      var conc = Vx * concPct / 100;
+      return Ls.map(function (o) {
+        var x = { o: o, sell: sell, conc: conc, V: Vx, S: Sx }, r = o.rate, full = o.L * r / 1200;
+        if (o.key === "cv") {
+          var N = n("lc_cvTerm") * 12, p = pmt(o.L, r, N);
+          x.bal = bal(o.L, r, N, Sx); x.pays = p * Sx; x.int = x.pays - (o.L - x.bal);
+        } else {
+          x.int = (o.key === "hm" && dutch6) ? full * Sx : drawnInt(r, Math.min(Sx, c.m)) + full * Math.max(Sx - c.m, 0);
+          x.bal = o.L; x.pays = x.int;
+        }
+        x.ext = (o.key === "hm" && Sx > hmTerm) ? o.L * n("lc_ext") / 100 : 0;
+        x.hold = c.common.holdMo * Sx;
+        x.cashIn = o.atClose + x.pays + o.drawFees + x.hold + x.ext;
+        x.net = Vx - sell - conc - x.bal;
+        x.profit = x.net - x.cashIn;
+        x.fin = o.points + o.fees + o.drawFees + x.int + x.ext;
+        return x;
+      });
+    }
+    var X6 = scen(V, S, 0);
+    var sellCost = X6[0].sell;
+    var Sb = n("lc_bestMo") > 0 ? Math.max(n("lc_bestMo"), c.m) : Math.max(S - 2, c.m);
+    var Vb = V * (1 + n("lc_bestUp") / 100), XB = scen(Vb, Sb, 0);
+    var Sw = Math.max(n("wMonths"), c.m), Vw = V * (1 - n("wDrop") / 100), XW = scen(Vw, Sw, n("wConc"));
+    var h6 = function (k) { return X6.map(function (x) { return x[k]; }); };
+    var pctS = function (v) { return isFinite(v) ? (v * 100).toFixed(1) + "%" : "—"; };
+    var t6 = head() + '<tbody>' +
+      '<tr class="grp"><td colspan="4">Sale at month ' + S + '</td></tr>' +
+      row("Sale price (ARV)", same(V)) +
+      row("Selling costs (commission, title, buyer repairs, photos)", same(-sellCost), "sub") +
+      row("Pays off the loan", X6.map(function (x) { return -x.bal; }), "sub") +
+      row("Net proceeds to you at closing", h6("net"), "tot", maxIdx) +
+      '<tr class="grp"><td colspan="4">Your cash in</td></tr>' +
+      row("Cash due at closing", X6.map(function (x) { return x.o.atClose; }), "sub") +
+      row("Loan payments through the sale (" + S + " months)", h6("pays"), "sub") +
+      row("Draw inspection fees", X6.map(function (x) { return x.o.drawFees; }), "sub") +
+      row("Holding costs (" + c.b.holdLabel + ")", h6("hold"), "sub") +
+      row("Total cash invested", h6("cashIn"), "tot", minIdx) +
+      '<tr class="grp"><td colspan="4">Result</td></tr>' +
+      row("Profit", h6("profit"), "tot", maxIdx) +
+      row("Profit % of ARV", X6.map(function (x) { return pctS(x.profit / V); }), "sub") +
+      row("Return on your cash", X6.map(function (x) { return x.cashIn > 0 ? pctS(x.profit / x.cashIn) : "—"; }), "sub") +
+      row("Annualized return", X6.map(function (x) { return x.cashIn > 0 && S > 0 ? pctS(x.profit / x.cashIn * 12 / S) : "—"; }), "sub") +
+      '<tr class="grp"><td colspan="4">Cost of the financing through the sale</td></tr>' +
+      row("Points + lender fees", X6.map(function (x) { return x.o.points + x.o.fees; }), "sub") +
+      row("Draw fees", X6.map(function (x) { return x.o.drawFees; }), "sub") +
+      row("Interest through the sale", h6("int"), "sub") +
+      row("Total financing cost", h6("fin"), "tot", minIdx) +
+      '<tr class="grp"><td colspan="4">Best case: sells for ' + money(Vb) + ' (+' + n("lc_bestUp") + '%) at month ' + Sb + '</td></tr>' +
+      row("Profit", XB.map(function (x) { return x.profit; }), "tot", maxIdx) +
+      row("Return on your cash", XB.map(function (x) { return x.cashIn > 0 ? pctS(x.profit / x.cashIn) : "—"; }), "sub") +
+      row("Total cash invested", XB.map(function (x) { return x.cashIn; }), "sub") +
+      row("Financing cost", XB.map(function (x) { return x.fin; }), "sub") +
+      '<tr class="grp"><td colspan="4">Expected: sells for ' + money(V) + ' at month ' + S + '</td></tr>' +
+      row("Profit", h6("profit"), "tot", maxIdx) +
+      '<tr class="grp"><td colspan="4">Worst case: sells for ' + money(Vw) + ' (−' + n("wDrop") + '%) at month ' + Sw + ', ' + n("wConc") + '% concessions</td></tr>' +
+      row("Buyer concessions", XW.map(function (x) { return -x.conc; }), "sub") +
+      row("Hard money extension fee", XW.map(function (x) { return x.ext ? -x.ext : 0; }), "sub") +
+      row("Profit", XW.map(function (x) { return x.profit; }), "tot", maxIdx) +
+      row("Return on your cash", XW.map(function (x) { return x.cashIn > 0 ? pctS(x.profit / x.cashIn) : "—"; }), "sub") +
+      row("Total cash invested", XW.map(function (x) { return x.cashIn; }), "sub") +
+      row("Financing cost", XW.map(function (x) { return x.fin; }), "sub") +
+      row("Swing from best to worst", XB.map(function (x, i) { return x.profit - XW[i].profit; }), "sub") +
+      '</tbody>';
+    $("lc_t6").innerHTML = t6 + (S > hmTerm ? '' : '');
+    $("lc_t6note").textContent = S > hmTerm ? "Heads up: a " + S + "-month hold runs past the " + hmTerm + "-month hard money term. Expect an extension fee (often 1% of the loan) that is not included here." : "";
+  }
+
+  window.lcReset = function () { IDS.forEach(function (id) { $(id).value = D[id]; }); save(); render(); };
+  load();
+  document.getElementById("form").addEventListener("input", function () { render(); save(); });
+  document.getElementById("form").addEventListener("change", function () { render(); save(); });
+  document.addEventListener("click", function (e) { if (e.target && (e.target.id === "btnExample" || e.target.id === "btnClear")) setTimeout(render, 0); });
+  render();
+})();
+</script>
+<script>
+/* Sanity checks + saved deals */
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var v = function (id) { return window.FlipInput.val(id); };
+  var has = function (id) { return $(id) && String($(id).value).trim() !== ""; };
+  function money(n) { return "$" + Math.round(n).toLocaleString("en-US"); }
+  function runChecks() {
+    var out = [];
+    var price = v("asking") * (1 + v("premium") / 100), arv = v("arv");
+    if (has("asking") && has("arv") && arv > 0) {
+      if (arv <= price) out.push("ARV is at or below the purchase price. Check your comps.");
+      else if (price > arv * 0.85) out.push("Purchase price is over 85% of ARV, which leaves very little room for rehab and costs.");
+      if (!has("rehabEst") || v("rehabEst") === 0) out.push("No rehab estimate yet. Pick a rehab level or enter a number.");
+      if (v("sqft") > 0 && v("rehabEst") / v("sqft") > 80) out.push("Rehab is over $80 per sq ft. Double-check the estimate.");
+      if (v("sqft") > 0 && arv / v("sqft") > 600) out.push("ARV is over $600 per sq ft. Make sure the square footage is right.");
+      if (v("contPct") < 10) out.push("Contingency is under 10%. Most rehabs run over.");
+      if (v("months") < 3) out.push("A holding period under 3 months is aggressive. Most flips take 4 to 8 months to buy, rehab and sell.");
+      if (v("wMonths") < v("months")) out.push("Worst-case hold is shorter than your holding period, so the stress test is too easy.");
+      if (has("lc_months") && v("lc_months") > v("months")) out.push("Rehab months in section 7 (" + v("lc_months") + ") are longer than your holding period (" + v("months") + ").");
+      if (v("profitAmt") === 0) out.push("No desired profit is set, so the true-cost MAO leaves you nothing.");
+      if (v("commPct") === 0 && v("sTitlePct") === 0) out.push("Selling costs are zero. Even a for-sale-by-owner sale has title and closing costs.");
+    }
+    var box = $("checks"), ul = $("checkList");
+    ul.innerHTML = "";
+    out.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+    box.hidden = out.length === 0;
+  }
+  ["input", "change"].forEach(function (ev) { document.addEventListener(ev, function () { setTimeout(runChecks, 0); }); });
+  document.addEventListener("click", function () { setTimeout(runChecks, 0); });
+
+  // ---- saved deals (this browser only) ----
+  var DKEY = "flipCalc.deals.v1", KEYS = ["flipCalc.v2", "flipCalc.loans.v2"];
+  function store() { try { return JSON.parse(localStorage.getItem(DKEY) || "{}") || {}; } catch (e) { return null; } }
+  function status(t) { var s = $("copyStatus"); s.textContent = t; setTimeout(function () { if (s.textContent === t) s.textContent = ""; }, 3500); }
+  function refresh(sel) {
+    var d = store(), s = $("savedDeals");
+    if (d === null) { s.disabled = true; $("btnSave").disabled = true; $("btnSave").title = "Saving isn't available in this browser"; return; }
+    var names = Object.keys(d).sort(function (a, b) { return (d[b].t || 0) - (d[a].t || 0); });
+    s.innerHTML = '<option value="">' + (names.length ? "Saved deals (" + names.length + ")…" : "No saved deals yet") + '</option>';
+    names.forEach(function (n) { var o = document.createElement("option"); o.value = n; o.textContent = n; s.appendChild(o); });
+    s.value = sel && d[sel] ? sel : "";
+    $("btnDelSave").hidden = !s.value;
+  }
+  $("btnSave").addEventListener("click", function () {
+    var d = store(); if (d === null) { status("Saving isn't available in this browser."); return; }
+    var name = String($("address").value || "").trim() || ("Untitled deal " + new Date().toLocaleDateString("en-US"));
+    var snap = { t: Date.now() };
+    try { KEYS.forEach(function (k) { snap[k] = localStorage.getItem(k); }); d[name] = snap; localStorage.setItem(DKEY, JSON.stringify(d)); localStorage.setItem("flipCalc.current", name); }
+    catch (e) { status("Couldn't save. Browser storage may be full or blocked."); return; }
+    refresh(name); status("Saved “" + name + "” in this browser.");
+  });
+  $("savedDeals").addEventListener("change", function () {
+    var name = this.value; $("btnDelSave").hidden = !name; if (!name) return;
+    var d = store(); if (!d || !d[name]) return;
+    try { KEYS.forEach(function (k) { if (d[name][k] == null) localStorage.removeItem(k); else localStorage.setItem(k, d[name][k]); }); localStorage.setItem("flipCalc.current", name); }
+    catch (e) { status("Couldn't open that deal."); return; }
+    location.reload();
+  });
+  var delArmed = null;
+  $("btnDelSave").addEventListener("click", function () {
+    var btn = this, name = $("savedDeals").value; if (!name) return;
+    if (!delArmed) { btn.textContent = "Click again to delete"; btn.classList.add("arm"); delArmed = setTimeout(function () { delArmed = null; btn.textContent = "Delete"; btn.classList.remove("arm"); }, 4000); return; }
+    clearTimeout(delArmed); delArmed = null; btn.textContent = "Delete"; btn.classList.remove("arm");
+    var d = store(); if (!d) return; delete d[name];
+    try { localStorage.setItem(DKEY, JSON.stringify(d)); } catch (e) {}
+    refresh(""); status("Deleted “" + name + "”.");
+  });
+  var cur = null; try { cur = localStorage.getItem("flipCalc.current"); } catch (e) {}
+  refresh(cur);
+  runChecks();
+})();
+</script>
+
+
+
+</body></html>
