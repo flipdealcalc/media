@@ -28,7 +28,7 @@ This repo holds everything needed to make and schedule one week of Flip Deal Cal
 8. Commit and push (posts/, plans/, shots/, log/). Wait ~1 minute, then check each raw URL returns 200.
 9. Schedule in Metricool at 10:00 America/Indianapolis, one post per network per day:
    - Instagram: `instagramData.type = "REEL"`, `showReelOnFeed: true`, `isAiGenerated: false`.
-   - TikTok: `tiktokData.privacyOption = "PUBLIC_TO_EVERYONE"`, `commercialContentOwnBrand: true`, `isAigc: false`.
+   - TikTok: `tiktokData.title` (required, short hook), `privacyOption = "PUBLIC_TO_EVERYONE"`, `commercialContentOwnBrand: true`, `isAigc: false`.
    - `autoPublish: true`. Save each returned post id/plannerUrl into the week log and push again.
 10. Send Ian a short report: what was posted last week and how it did (views, follows, comments, link clicks if available), what's scheduled this week, and anything he should do (for example, reply to deal comments).
 
@@ -41,4 +41,4 @@ This repo holds everything needed to make and schedule one week of Flip Deal Cal
 - Don't change prices, discount codes, the Gumroad store or account settings.
 
 ## Media URLs
-raw.githubusercontent.com serves files from this public repo. If Metricool rejects a raw URL, try `https://github.com/flipdealcalc/media/raw/main/<path>`, then GitHub Pages if it's enabled. Record which one worked here.
+Tested 2026-11-01: `https://raw.githubusercontent.com/flipdealcalc/media/main/posts/<file>.mp4` works. Metricool copies the file to its own storage when the post is created, so the push must land before scheduling. If it ever fails, try `https://github.com/flipdealcalc/media/raw/main/<path>`.
