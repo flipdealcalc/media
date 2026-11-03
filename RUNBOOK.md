@@ -4,7 +4,7 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
 
 ## Brand and accounts
 - Brand: **Deal Ledger**: spreadsheets for flips, rentals and BRRRRs. "Analyze the deal. Then run it."
-- Metricool brand id: **7803252**, timezone America/Indianapolis. Call `getBrandSettings` first: `networksData` lists the networks actually connected and their current handles. Only schedule to networks listed there. (The Instagram and TikTok accounts started as @flipdealcalc and are being renamed to the Deal Ledger handle; use whatever handle getBrandSettings shows, never a hard-coded one.)
+- Metricool brand id: **7803252**, timezone America/Indianapolis. Call `getBrandSettings` first: `networksData` lists the networks actually connected and their current handles. Only schedule to networks listed there. Handles: Instagram **@dealledgerhq**, TikTok **@dealledgerhq**, Facebook Page **Deal Ledger** (renamed 2026-11-03 from flipdealcalc). Metricool may keep showing the old names for a while; the connections still post to the renamed accounts. Never use @flipdealcalc in captions.
 - TikTok is a General account (no clickable bio link until verified or 1,000 followers): TikTok captions point to the Instagram handle for the link.
 - Store (Gumroad, still at the flipdealcalc username so old links keep working): https://flipdealcalc.gumroad.com
   - Live: /l/flip (Flip Deal Calculator, $39), /l/free (free web flip calculator)
@@ -41,7 +41,7 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
 7. Write `log/week_YYYY-MM-DD.json` (same shape as week_2026-11-02.json) with captions per network:
    - Instagram: hook line, 1–3 short lines with the numbers, CTA "Comment CALC and I'll DM you the free calculator." (or "Link in bio"), 4–5 hashtags.
    - Facebook: same as Instagram but a full link instead of "link in bio" (for example https://flipdealcalc.gumroad.com/l/free), 2–3 hashtags.
-   - TikTok: one or two sentences plus "Link is on my IG @<instagram handle from getBrandSettings>", 3–4 hashtags. Needs `tiktokData.title` (short hook).
+   - TikTok: one or two sentences plus "Link is on my IG @dealledgerhq", 3–4 hashtags. Needs `tiktokData.title` (short hook).
 8. Commit and push (posts/, plans/, shots/, log/). Wait ~1 minute.
 9. Schedule in Metricool at 10:00 America/Indianapolis, one post per connected network per day (separate posts so each gets its own caption):
    - Instagram: `instagramData.type = "REEL"`, `showReelOnFeed: true`, `isAiGenerated: false`.
