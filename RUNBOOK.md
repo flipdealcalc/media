@@ -16,7 +16,7 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
 ## Tools in this repo
 - `tools/calc_shot.py`: runs a flip through the free web calculator; phone-sized screenshots + numbers.
 - `tools/xl_calc.py`: runs a deal through any Deal Ledger spreadsheet (BRRRR, Rental, Flip calculators and the trackers) and prints every number; `--shot NAME` saves a picture of the results.
-  - The spreadsheets are the paid products, so they are **never** committed to this public repo (`spreadsheets/` is git-ignored). They live in the private repo **flipdealcalc/deal-ledger-private**. Attach it with add_repo (access read), clone it to /home/claude/private, and run xl_calc with `SPREADSHEETS_DIR=/home/claude/private/spreadsheets`.
+  - The spreadsheets are the paid products, so they are **never** committed to this public repo (`spreadsheets/` is git-ignored). They live in the private repo **flipdealcalc/Deal-Ledger-Private**. Attach it with add_repo (access read), clone it to /home/claude/private, and run xl_calc with `SPREADSHEETS_DIR=/home/claude/private/spreadsheets`.
   - If the private repo can't be reached, skip rental/BRRRR deal posts that week and use flip topics (calc_shot.py) or tips instead. Say so in the report.
   - BRRRR: `SPREADSHEETS_DIR=/home/claude/private/spreadsheets python3 tools/xl_calc.py BRRRR_Calculator "BRRRR Calculator" '{"Purchase price": 90000, "After-repair value (ARV)": 180000, "Rehab budget": 35000, "Monthly rent": 1650}' --shot brrrr_1108`
   - Rental: `SPREADSHEETS_DIR=/home/claude/private/spreadsheets python3 tools/xl_calc.py Rental_Deal_Calculator "Rental Calculator" '{"Purchase price": 140000, "Monthly rent": 1500}' --shot rental_1109`
