@@ -57,7 +57,7 @@ def base(brand=True):
     d = ImageDraw.Draw(im)
     if brand:
         f = F("bold", 30)
-        label = "FLIP DEAL CALCULATOR"
+        label = os.environ.get("POST_BRAND", "DEAL LEDGER")
         tw = d.textlength(label, font=f)
         d.rounded_rectangle((SAFE_L, 118, SAFE_L + tw + 40, 170), radius=26, outline=ACCENT, width=3)
         d.text((SAFE_L + 20, 126), label, font=f, fill=ACCENT)
