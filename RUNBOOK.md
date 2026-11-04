@@ -40,7 +40,7 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
 6. Render: `python3 tools/render_plan.py plans/<each>.json`. Open a few frames from `build/<id>/` and check that text fits and doesn't overlap. Fix and re-render if needed.
 7. Write `log/week_YYYY-MM-DD.json` (same shape as week_2026-11-02.json) with captions per network:
    - Instagram: hook line, 1–3 short lines with the numbers, CTA "Comment CALC and I'll DM you the free calculator." (or "Link in bio"), 4–5 hashtags.
-   - Facebook: same as Instagram but a full link instead of "link in bio" (for example https://flipdealcalc.gumroad.com/l/free), 2–3 hashtags.
+   - Facebook: same as Instagram but a full link instead of "link in bio" (for example https://dealledgerhq.gumroad.com/l/free), 2–3 hashtags.
    - TikTok: one or two sentences plus "Link is on my IG @dealledgerhq", 3–4 hashtags. Needs `tiktokData.title` (short hook).
 8. Commit and push (posts/, plans/, shots/, log/). Wait ~1 minute.
 9. Schedule in Metricool at 10:00 America/Indianapolis, one post per connected network per day (separate posts so each gets its own caption):
