@@ -1,5 +1,5 @@
 {
- "checked": "2026-11-04",
+ "checked": "2026-11-04 13:00",
  "store": "https://dealledgerhq.gumroad.com",
  "products": {
   "flip": "https://dealledgerhq.gumroad.com/l/flip",
@@ -8,8 +8,8 @@
   "brrrr": "https://dealledgerhq.gumroad.com/l/brrrr",
   "flip_tracker": "https://dealledgerhq.gumroad.com/l/flip-tracker",
   "rental_tracker": "https://dealledgerhq.gumroad.com/l/rental-tracker",
-  "pipeline": null,
+  "pipeline": "https://dealledgerhq.gumroad.com/l/deal-pipeline",
   "portfolio": null,
-  "toolkit": null
+  "toolkit": "https://dealledgerhq.gumroad.com/l/investor-toolkit"
  }
 }

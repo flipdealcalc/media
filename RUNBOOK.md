@@ -8,7 +8,7 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
 - TikTok is a General account (no clickable bio link until verified or 1,000 followers): TikTok captions point to the Instagram handle for the link.
 - Store (Gumroad): **https://dealledgerhq.gumroad.com** (username changed from flipdealcalc on 2026-11-04; flipdealcalc.gumroad.com links no longer work, never use them).
   - Live (checked 2026-11-04): /l/flip (Flip Deal Calculator, $39), /l/free (free web flip calculator), /l/rental (Rental Deal Calculator, $29), /l/brrrr (BRRRR Calculator, $29), /l/flip-tracker (Flip Project Tracker, $39), /l/rental-tracker (Rental Portfolio Tracker, $49)
-  - Deal Pipeline ($19), Portfolio Dashboard ($19) and the Investor Toolkit bundle ($129): check `log/store_links.json` for their URLs. If a link isn't listed there, don't link that product; say "link in bio" on Instagram or skip the link.
+  - Also live: /l/deal-pipeline (Deal Pipeline, $19), /l/investor-toolkit (Investor Toolkit bundle, all 7, $129). Portfolio Dashboard ($19): check `log/store_links.json` for its URL. If a link isn't listed there, don't link that product; say "link in bio" on Instagram or skip the link.
   - Before promoting any product link, fetch it and make sure it loads.
 - Discount codes: INSTA, TIKTOK, FBGROUP ($5 off). LAUNCH ended Nov 8, 2026, so don't mention it.
 - Video URLs for Metricool: `https://raw.githubusercontent.com/flipdealcalc/media/main/<path>`.
