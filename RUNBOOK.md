@@ -50,6 +50,11 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
    - `autoPublish: true`. Save each returned post id into the week log and push again.
 10. Send Ian a short report: last week's results per network and the top post, this week's 7 topics, and anything he should do (reply to deal comments, a failed post, a product link that isn't live).
 
+## Product spotlights (6 PM slot)
+- A second daily slot at **18:00** is used for product spotlight Reels (one product per day, all three networks). Nov 5–10, 2026 are scheduled: see `log/spotlights_2026-11-05.json`. The weekly 10:00 posts stay as they are.
+- Portfolio Dashboard has no spotlight yet: on 2026-11-04 its page (/l/portfolio) still showed the Rental Portfolio Tracker's name and $49 price. Before giving it a spotlight, fetch the page and confirm it says Portfolio Dashboard and $19.
+- After Nov 10, keep at most 2 product spotlights per week at 18:00, rotating products, and only for links in `log/store_links.json` that load.
+
 ## Hard rules (no human reviews these posts)
 - No promises of profit or income. No "guaranteed", "passive income", "get rich" language.
 - No fake reviews, testimonials, buyer counts or sales claims.
