@@ -1,0 +1,54 @@
+{
+ "id": "2026-11-09_spot_pipeline",
+ "music": "playful",
+ "scenes": [
+  {
+   "kind": "card",
+   "title": "The deal you lost was a follow-up you forgot.",
+   "dur": 3.0
+  },
+  {
+   "kind": "stats",
+   "title": "Your pipeline at a glance",
+   "rows": [
+    [
+     "Active deals",
+     "4",
+     "ink"
+    ],
+    [
+     "Offers made",
+     "5",
+     "ink"
+    ],
+    [
+     "Follow-ups due today",
+     "2",
+     "bad"
+    ]
+   ],
+   "caption": "Max offer and room vs asking calculate for every lead.",
+   "dur": 4.4
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_pipe_summary.jpg",
+   "title": "A call list every morning",
+   "caption": "Overdue follow-ups turn red. See which lead sources close.",
+   "dur": 4.4
+  },
+  {
+   "kind": "card",
+   "title": "Deal Pipeline",
+   "sub": "Excel + Google Sheets \u00b7 $19",
+   "dur": 3.0
+  },
+  {
+   "kind": "end",
+   "title": "Never drop a lead again",
+   "cta": "Link in bio",
+   "sub": "Deal Ledger",
+   "dur": 3.4
+  }
+ ]
+}

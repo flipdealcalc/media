@@ -1,0 +1,59 @@
+{
+ "id": "2026-11-06_spot_brrrr",
+ "music": "upbeat",
+ "scenes": [
+  {
+   "kind": "card",
+   "title": "A BRRRR only works if the refi gives your money back.",
+   "dur": 3.2
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_brrrr_results.jpg",
+   "crop": [
+    0,
+    0,
+    1074,
+    1300
+   ],
+   "title": "$98K buy, $215K ARV",
+   "caption": "Cash in: $31,211. Back at the refi: $29,919. Left in the deal: $1,292.",
+   "dur": 4.8
+  },
+  {
+   "kind": "stats",
+   "title": "After the refi",
+   "rows": [
+    [
+     "Cash recovered",
+     "96%",
+     "good"
+    ],
+    [
+     "Cash flow",
+     "$247/mo",
+     "good"
+    ],
+    [
+     "Max price for all cash back",
+     "$96,813",
+     "amber"
+    ]
+   ],
+   "dur": 4.6
+  },
+  {
+   "kind": "card",
+   "title": "BRRRR Calculator",
+   "sub": "Plus what happens if the appraisal comes in low \u00b7 $29",
+   "dur": 3.2
+  },
+  {
+   "kind": "end",
+   "title": "Know your number before you offer",
+   "cta": "Link in bio",
+   "sub": "Deal Ledger",
+   "dur": 3.4
+  }
+ ]
+}

@@ -1,0 +1,61 @@
+{
+ "id": "2026-11-05_spot_rental_calc",
+ "music": "chill",
+ "scenes": [
+  {
+   "kind": "card",
+   "title": "That listing says it cash flows.",
+   "sub": "Does it, after vacancy, repairs and management?",
+   "dur": 3.2
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_rental_results.jpg",
+   "crop": [
+    0,
+    0,
+    690,
+    1300
+   ],
+   "title": "$120K rental, $1,450 rent",
+   "caption": "After every expense: $102/month. Cash-on-cash: 2.5%. Verdict: CAUTION.",
+   "dur": 4.6
+  },
+  {
+   "kind": "stats",
+   "title": "Same rental, every number",
+   "rows": [
+    [
+     "Cash flow",
+     "$102/mo",
+     "amber"
+    ],
+    [
+     "Cash-on-cash",
+     "2.5%",
+     "amber"
+    ],
+    [
+     "DSCR",
+     "1.16",
+     "amber"
+    ]
+   ],
+   "caption": "Plus cap rate, the 1% rule, a refi option and a 5-year outlook.",
+   "dur": 4.4
+  },
+  {
+   "kind": "card",
+   "title": "Rental Deal Calculator",
+   "sub": "Excel + Google Sheets \u00b7 $29",
+   "dur": 3.0
+  },
+  {
+   "kind": "end",
+   "title": "Run your next rental",
+   "cta": "Link in bio",
+   "sub": "Deal Ledger",
+   "dur": 3.4
+  }
+ ]
+}

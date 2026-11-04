@@ -1,0 +1,39 @@
+{
+ "id": "2026-11-07_spot_flip_tracker",
+ "music": "tense",
+ "scenes": [
+  {
+   "kind": "card",
+   "title": "Most flips don't lose money at the closing table.",
+   "sub": "They lose it one receipt at a time.",
+   "dur": 3.4
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_fliptrk_budget.jpg",
+   "title": "Budget vs actual, by trade",
+   "caption": "$51,290 of $68,300 spent. 4 trades already over budget.",
+   "dur": 4.6
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_fliptrk_pl.jpg",
+   "title": "Profit, updated as you spend",
+   "caption": "Projected $17,427. Forecast today: $17,946.",
+   "dur": 4.4
+  },
+  {
+   "kind": "card",
+   "title": "Flip Project Tracker",
+   "sub": "Expenses, draws, lien waivers, timeline \u00b7 $39",
+   "dur": 3.2
+  },
+  {
+   "kind": "end",
+   "title": "Run the flip, not just the numbers",
+   "cta": "Link in bio",
+   "sub": "Deal Ledger",
+   "dur": 3.4
+  }
+ ]
+}

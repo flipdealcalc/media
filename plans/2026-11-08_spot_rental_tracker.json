@@ -1,0 +1,39 @@
+{
+ "id": "2026-11-08_spot_rental_tracker",
+ "music": "chill",
+ "scenes": [
+  {
+   "kind": "card",
+   "title": "Tax season with rentals:",
+   "sub": "a shoebox of receipts, or one tab for your CPA?",
+   "dur": 3.2
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_renttrk_dash.jpg",
+   "title": "Every property on one screen",
+   "caption": "3 properties, 7 units, $7,075/month rent roll.",
+   "dur": 4.4
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_renttrk_sche.jpg",
+   "title": "Schedule E, done for you",
+   "caption": "Every expense lands on the right line as you log it.",
+   "dur": 4.6
+  },
+  {
+   "kind": "card",
+   "title": "Rental Portfolio Tracker",
+   "sub": "Leases, ledger, cash flow, Schedule E \u00b7 $49",
+   "dur": 3.2
+  },
+  {
+   "kind": "end",
+   "title": "Hand your CPA one tab",
+   "cta": "Link in bio",
+   "sub": "Deal Ledger",
+   "dur": 3.4
+  }
+ ]
+}

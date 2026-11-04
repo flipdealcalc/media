@@ -1,0 +1,67 @@
+{
+ "id": "2026-11-10_spot_toolkit",
+ "music": "upbeat",
+ "scenes": [
+  {
+   "kind": "card",
+   "title": "Analyze the deal. Then run it.",
+   "sub": "7 spreadsheets for flips, rentals and BRRRRs.",
+   "dur": 3.2
+  },
+  {
+   "kind": "shot",
+   "img": "shots/prod_bundle_cover.jpg",
+   "title": "The Deal Ledger Investor Toolkit",
+   "caption": "3 calculators, 3 trackers and a portfolio dashboard.",
+   "dur": 4.6
+  },
+  {
+   "kind": "stats",
+   "title": "Find, analyze, run",
+   "rows": [
+    [
+     "Find",
+     "Pipeline",
+     "ink"
+    ],
+    [
+     "Analyze",
+     "3 calculators",
+     "ink"
+    ],
+    [
+     "Run",
+     "2 trackers",
+     "ink"
+    ]
+   ],
+   "caption": "Plus a portfolio dashboard. Excel + Google Sheets.",
+   "dur": 4.6
+  },
+  {
+   "kind": "stats",
+   "title": "All 7 tools",
+   "rows": [
+    [
+     "Bought separately",
+     "$223",
+     "ink"
+    ],
+    [
+     "Investor Toolkit",
+     "$129",
+     "good"
+    ]
+   ],
+   "caption": "Save $94. One-time purchase.",
+   "dur": 4.0
+  },
+  {
+   "kind": "end",
+   "title": "Get the whole system",
+   "cta": "Link in bio",
+   "sub": "Deal Ledger",
+   "dur": 3.4
+  }
+ ]
+}
