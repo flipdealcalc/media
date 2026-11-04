@@ -6,10 +6,10 @@ This repo holds everything needed to make and schedule one week of **Deal Ledger
 - Brand: **Deal Ledger**: spreadsheets for flips, rentals and BRRRRs. "Analyze the deal. Then run it."
 - Metricool brand id: **7803252**, timezone America/Indianapolis. Call `getBrandSettings` first: `networksData` lists the networks actually connected and their current handles. Only schedule to networks listed there. Handles: Instagram **@dealledgerhq**, TikTok **@dealledgerhq**, Facebook Page **Deal Ledger** (renamed 2026-11-03 from flipdealcalc). Metricool may keep showing the old names for a while; the connections still post to the renamed accounts. Never use @flipdealcalc in captions.
 - TikTok is a General account (no clickable bio link until verified or 1,000 followers): TikTok captions point to the Instagram handle for the link.
-- Store (Gumroad, still at the flipdealcalc username so old links keep working): https://flipdealcalc.gumroad.com
-  - Live: /l/flip (Flip Deal Calculator, $39), /l/free (free web flip calculator)
-  - Being listed (check the store page loads before promoting one): /l/rental ($29), /l/brrrr ($29), /l/flip-tracker ($39), /l/rental-tracker ($49), /l/pipeline ($19), /l/portfolio ($19), /l/toolkit (all 7, $129)
-  - If a product link isn't live yet, promote the free calculator or "link in bio" instead.
+- Store (Gumroad): **https://dealledgerhq.gumroad.com** (username changed from flipdealcalc on 2026-11-04; flipdealcalc.gumroad.com links no longer work, never use them).
+  - Live (checked 2026-11-04): /l/flip (Flip Deal Calculator, $39), /l/free (free web flip calculator), /l/rental (Rental Deal Calculator, $29), /l/brrrr (BRRRR Calculator, $29), /l/flip-tracker (Flip Project Tracker, $39), /l/rental-tracker (Rental Portfolio Tracker, $49)
+  - Deal Pipeline ($19), Portfolio Dashboard ($19) and the Investor Toolkit bundle ($129): check `log/store_links.json` for their URLs. If a link isn't listed there, don't link that product; say "link in bio" on Instagram or skip the link.
+  - Before promoting any product link, fetch it and make sure it loads.
 - Discount codes: INSTA, TIKTOK, FBGROUP ($5 off). LAUNCH ended Nov 8, 2026, so don't mention it.
 - Video URLs for Metricool: `https://raw.githubusercontent.com/flipdealcalc/media/main/<path>`.
 
